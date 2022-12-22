@@ -91,7 +91,8 @@ func AuthCheck() gin.HandlerFunc {
 			return
 		}
 
-		fmt.Println("AuthCheck2")
+		fmt.Println("AuthCheck2, Token:")
+		fmt.Println(h.IDToken)
 
 		claim, err := controller.ValidateJWT(h.IDToken)
 		if err != nil {
