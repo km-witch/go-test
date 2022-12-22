@@ -1,0 +1,2 @@
+[server] ##nomal type
+dsn  = "root:2022@tcp(34.64.186.156:3306)/test?parseTime=True"

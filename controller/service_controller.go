@@ -12,7 +12,6 @@ import (
 )
 
 type ReqBody_Token struct {
-	IDToken  string
 	NickName string
 }
 
@@ -32,6 +31,8 @@ type Resp_FindUserBlockData struct {
 func UserBlockAccess(ctx *gin.Context) {
 	// body에 담아서 토큰 담아오기
 	var reqBody ReqBody_Token
+	user_uid := ctx.MustGet("user_uid").(string)
+
 	if err := ctx.ShouldBind(&reqBody); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": err,
@@ -39,7 +40,7 @@ func UserBlockAccess(ctx *gin.Context) {
 		log.Fatal(err)
 		return
 	}
-	claim, err := ValidateJWT(reqBody.IDToken)
+	claim, err := ValidateJWT(user_uid)
 	if err != nil {
 		ctx.JSON(http.StatusForbidden, nil)
 		return
@@ -125,7 +126,6 @@ func UserBlockAccess(ctx *gin.Context) {
 }
 
 type ReqBody_ObjMessage struct {
-	IDToken    string
 	ObjMessage string
 	ObjId      int
 }
@@ -141,6 +141,7 @@ type ReqBody_ObjMessage struct {
 func WriteObjMessage(ctx *gin.Context) {
 	// body에 담아서 토큰 담아오기
 	var reqBody ReqBody_ObjMessage
+	user_uid := ctx.MustGet("user_uid").(string)
 	if err := ctx.ShouldBind(&reqBody); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": err,
@@ -148,13 +149,8 @@ func WriteObjMessage(ctx *gin.Context) {
 		log.Fatal(err)
 		return
 	}
-	claim, err := ValidateJWT(reqBody.IDToken)
-	if err != nil {
-		ctx.JSON(http.StatusForbidden, nil)
-		return
-	}
 
-	uid, _ := strconv.Atoi(claim.UID)
+	uid, _ := strconv.Atoi(user_uid)
 	oid := strconv.Itoa(reqBody.ObjId)
 	message := reqBody.ObjMessage
 
@@ -177,7 +173,7 @@ func WriteObjMessage(ctx *gin.Context) {
 
 		fmt.Println("2")
 		// 이미 작성했나 확인
-		amount, err := model.Obj_msgSchema.GetObjMsgCountByUser(configs.DB, uid, oid)
+		amount, err := model.Obj_msgSchema.GetObjMsgCountByUserAll(configs.DB, uid, oid)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": err,
@@ -197,6 +193,7 @@ func WriteObjMessage(ctx *gin.Context) {
 			ctx.JSON(http.StatusOK, gin.H{
 				"payload": msg,
 			})
+			return
 		}
 
 		// 성공
@@ -252,7 +249,6 @@ func WriteObjMessage(ctx *gin.Context) {
 }
 
 type ReqBody_ObjDel struct {
-	IDToken  string
 	ObjMsgId int
 	ObjId    int
 }
@@ -268,6 +264,7 @@ type ReqBody_ObjDel struct {
 func DeleteObjMsg(ctx *gin.Context) {
 	// body에 담아서 토큰 담아오기
 	var reqBody ReqBody_ObjDel
+	user_uid := ctx.MustGet("user_uid").(string)
 	if err := ctx.ShouldBind(&reqBody); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": err,
@@ -275,18 +272,10 @@ func DeleteObjMsg(ctx *gin.Context) {
 		log.Fatal(err)
 		return
 	}
-	claim, err := ValidateJWT(reqBody.IDToken)
-	if err != nil {
-		ctx.JSON(http.StatusForbidden, gin.H{
-			"error": err,
-		})
-		return
-	}
 
-	uid, _ := strconv.Atoi(claim.UID)
+	uid, _ := strconv.Atoi(user_uid)
 	oid := strconv.Itoa(reqBody.ObjMsgId)
 	omid := strconv.Itoa(reqBody.ObjMsgId)
-
 	fmt.Println("1")
 
 	// obj 주인과 obj 작성 타입 확인
@@ -300,7 +289,6 @@ func DeleteObjMsg(ctx *gin.Context) {
 
 	fmt.Println("2")
 	obj_msg, err := model.Obj_msgSchema.GetObjMsgByObjId(configs.DB, oid)
-	fmt.Println(obj_msg)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": err,

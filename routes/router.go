@@ -40,9 +40,9 @@ func SetupRouter(r *gin.Engine) {
 	}
 	route_main := r.Group("/api")
 	{
-		route_main.POST("/user", controller.UserBlockAccess)
-		route_main.POST("/obj/msg", controller.WriteObjMessage)
-		route_main.POST("/obj/msg/del", controller.DeleteObjMsg)
+		route_main.POST("/user", AuthCheck(), controller.UserBlockAccess)
+		route_main.POST("/obj/msg", AuthCheck(), controller.WriteObjMessage)
+		route_main.POST("/obj/msg/del", AuthCheck(), controller.DeleteObjMsg)
 	}
 
 	// route_block := r.Group("/api/block")

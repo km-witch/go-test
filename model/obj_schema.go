@@ -45,8 +45,10 @@ func (om *Obj_msg) UpdateObjMsg(db *gorm.DB, message, oid string, uid int) (Obj_
 	userInput.Message = message
 	userInput.ObjId, _ = strconv.Atoi(oid)
 	userInput.Updated_user = uid
+	userInput.IsActive = true
 
 	db.Model(&userInput).Where("obj_id=?", oid).Updates(&userInput)
+	db.Model(&userInput).Where("obj_id=?", oid).Find(&userInput)
 
 	return userInput, nil
 }
@@ -68,6 +70,12 @@ func (om *Obj_msg) GetObjActiveMsgCount(db *gorm.DB, objid string) (int, error) 
 func (om *Obj_msg) GetObjMsgCountByUser(db *gorm.DB, uid int, objid string) (int, error) {
 	var result []Obj_msg
 	err := db.Model(&result).Where("is_active=true AND id=? AND created_user=?", objid, uid).Find(&result).Error
+
+	return len(result), err
+}
+func (om *Obj_msg) GetObjMsgCountByUserAll(db *gorm.DB, uid int, objid string) (int, error) {
+	var result []Obj_msg
+	err := db.Model(&result).Where("id=? AND created_user=?", objid, uid).Find(&result).Error
 
 	return len(result), err
 }
@@ -119,6 +127,7 @@ func (om *Obj_msg) UpdateObjMsgIsActive(db *gorm.DB, obj_msg_id string) (Obj_msg
 	var obj Obj
 
 	db.Model(&result).Where("id=?", obj_msg_id).UpdateColumn("is_active", false)
+	db.Model(&result).Where("id=?", obj_msg_id).Find(&result)
 
 	db.Model(&obj).Find(&obj, result.ObjId)
 	db.Model(Obj{}).Where("id=?", result.ObjId).UpdateColumn("amount", obj.Amount-1)

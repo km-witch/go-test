@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"pkg/configs"
 	"pkg/routes"
 
@@ -14,5 +15,10 @@ func main() {
 	routes.SetupRouter(r)
 	configs.ConnectDB()
 	configs.ConnectDB2()
-	r.Run(":80")
+	// PORT Setting
+	PORT := flag.String("port", "8080", "Write Your PORT")
+	flag.Parse()
+	PORT_RE := ":" + *PORT
+
+	r.Run(PORT_RE)
 }
