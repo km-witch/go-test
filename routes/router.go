@@ -91,6 +91,7 @@ func AuthCheck() gin.HandlerFunc {
 
 		// Bearer 삭제하고 넘기기
 		tokenString := strings.Replace(h.IDToken, "Bearer ", "", 1)
+		fmt.Println("AuthCheck: ", tokenString)
 
 		claim, err := controller.ValidateJWT(tokenString)
 		if err != nil {
