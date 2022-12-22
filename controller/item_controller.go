@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 	"pkg/configs"
 	"pkg/model"
@@ -123,7 +123,7 @@ func CreateNftByGroupId(ctx *gin.Context) {
 
 		tx, err := model.NftTxSchema.CreateTx(configs.ConnectDB(), TxForm)
 		if err != nil {
-			log.Fatal(err)
+			fmt.Println(err)
 		}
 
 		ctx.JSON(http.StatusOK, gin.H{

@@ -104,7 +104,7 @@ func ReadObjMessages(ctx *gin.Context) {
 // 		ctx.JSON(http.StatusInternalServerError, gin.H{
 // 			"error": err,
 // 		})
-// 		log.Fatal(err)
+// 		fmt.Println(err)
 // 		return
 // 	}
 // 	// 세일로그확인 ✅
@@ -146,7 +146,7 @@ func ReadObjMessages(ctx *gin.Context) {
 // 	fmt.Println(4)
 // 	_, err = model.NftTxSchema.CreateTx(configs.ConnectDB(), TxForm)
 // 	if err != nil {
-// 		log.Fatal(err)
+// 		fmt.Println(err)
 // 	}
 
 // 	// 세일 로그 남기기
@@ -167,7 +167,7 @@ func ReadObjMessages(ctx *gin.Context) {
 // 	objForm.MsgRole = 1
 // 	realObj, err := model.ObjSchema.CreateObj(configs.ConnectDB(), objForm)
 // 	if err != nil {
-// 		log.Fatal(err)
+// 		fmt.Println(err)
 // 	}
 
 // 	ctx.JSON(http.StatusOK, gin.H{

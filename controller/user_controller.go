@@ -79,7 +79,7 @@ func DeleteUser(ctx *gin.Context) {
 // 	var userInput model.ItemOwned
 
 // 	if err := ctx.ShouldBind(&userInput); err != nil {
-// 		log.Fatal(err)
+// 		fmt.Println(err)
 // 		ctx.JSON(http.StatusInternalServerError, gin.H{
 // 			"error": err,
 // 		})

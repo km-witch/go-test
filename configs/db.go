@@ -3,7 +3,6 @@ package configs
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"time"
 
 	"gorm.io/driver/mysql"
@@ -25,7 +24,7 @@ func ConnectDB() *gorm.DB {
 	// DB 연결 진행
 	sqlDB, err_sql := sql.Open(db_type, dsn)
 	if err_sql != nil {
-		log.Fatal(err_sql)
+		fmt.Println(err_sql)
 	}
 	gormDB, err_gorm := gorm.Open(mysql.New(mysql.Config{
 		Conn: sqlDB,
@@ -49,7 +48,7 @@ func ConnectDB() *gorm.DB {
 	// gormDB.AutoMigrate(&model.Obj_msg{})
 
 	if err_gorm != nil {
-		log.Fatal(err_gorm)
+		fmt.Println(err_gorm)
 	}
 	fmt.Println("✅ DB Connected")
 	return gormDB
