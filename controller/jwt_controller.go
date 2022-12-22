@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"pkg/configs"
-	"strings"
 
 	"github.com/golang-jwt/jwt/v4"
 )
@@ -18,9 +17,9 @@ func ValidateJWT(tokenString string) (*configs.JWTClaims, error) {
 
 		fmt.Println("ParseWithClaims tokenstring: ", tokenString)
 
-		tokenString = strings.TrimLeft(tokenString, "Bearer ")
+		//tokenString = strings.TrimLeft(tokenString, "Bearer ")
 
-		fmt.Println("ParseWithClaims tokenstring parsed: ", tokenString)
+		//fmt.Println("ParseWithClaims tokenstring parsed: ", tokenString)
 
 		// Signing 메소드가 다르다면 실패
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {

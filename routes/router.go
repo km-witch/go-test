@@ -94,7 +94,8 @@ func AuthCheck() gin.HandlerFunc {
 
 		fmt.Println("AuthCheck2, Token:")
 		fmt.Println(h.IDToken)
-		tkn := strings.TrimLeft(h.IDToken, "Bearer")
+		// 잃어버린 e 추가하기
+		tkn := "e" + strings.TrimLeft(h.IDToken, "Bearer")
 		fmt.Println(tkn)
 
 		claim, err := controller.ValidateJWT(tkn)
