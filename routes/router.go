@@ -95,6 +95,7 @@ func AuthCheck() gin.HandlerFunc {
 		fmt.Println(h.IDToken)
 
 		claim, err := controller.ValidateJWT(h.IDToken)
+		fmt.Println("err", err)
 		if err != nil {
 			ctx.JSON(http.StatusForbidden, gin.H{
 				"error": "Token Verification Failed",
