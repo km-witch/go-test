@@ -4,7 +4,7 @@ import "github.com/gin-gonic/gin"
 
 func main() {
 	r := setupRouter()
-	r.Run(":443")
+	r.Run(":80")
 }
 
 func setupRouter() *gin.Engine {
