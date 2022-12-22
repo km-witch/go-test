@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"fmt"
 	"pkg/configs"
 	"strings"
 
@@ -15,7 +16,11 @@ func ValidateJWT(tokenString string) (*configs.JWTClaims, error) {
 	// Claim 과 Public Sercret으로 토큰 유효성을 검증한다.
 	token, err := jwt.ParseWithClaims(tokenString, &configs.JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
 
+		fmt.Println("ParseWithClaims tokenstring: ", tokenString)
+
 		tokenString = strings.TrimLeft(tokenString, "Bearer ")
+
+		fmt.Println("ParseWithClaims tokenstring parsed: ", tokenString)
 
 		// Signing 메소드가 다르다면 실패
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
