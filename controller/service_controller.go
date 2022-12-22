@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"pkg/configs"
 	"pkg/model"
@@ -36,7 +37,7 @@ func UserBlockAccess(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": err,
 		})
-		fmt.Println(err)
+		log.Fatal(err)
 		return
 	}
 	claim, err := ValidateJWT(user_uid)
@@ -145,8 +146,7 @@ func WriteObjMessage(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": err,
 		})
-		//fmt.Println(err)
-		fmt.Println(err)
+		log.Fatal(err)
 		return
 	}
 
@@ -269,7 +269,7 @@ func DeleteObjMsg(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": err,
 		})
-		fmt.Println(err)
+		log.Fatal(err)
 		return
 	}
 

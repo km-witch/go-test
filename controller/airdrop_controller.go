@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"pkg/configs"
 	"pkg/model"
@@ -48,7 +49,7 @@ func Airdrop_Item(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": err,
 		})
-		fmt.Println(err)
+		log.Fatal(err)
 		return
 	}
 	fmt.Println("🦾 Request Body Parsing Successed")
@@ -99,7 +100,7 @@ func Airdrop_Item(ctx *gin.Context) {
 	TxForm.Nftid = result.Id
 	_, err = model.NftTxSchema.CreateTx(configs.DB, TxForm)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "TX Creation Failed",
 		})
@@ -111,7 +112,7 @@ func Airdrop_Item(ctx *gin.Context) {
 	// 세일 ID를 통해 세일 조회
 	salesResult, err := model.SalesSchema.GetSalesById(configs.DB, reqBody.Sales_id)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Get Sales Failed",
 		})
