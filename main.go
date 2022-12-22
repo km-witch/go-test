@@ -1,16 +1,18 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"pkg/configs"
+	"pkg/routes"
 
+	"github.com/gin-gonic/gin"
+)
+
+// Just MVC Pattern -> Should Change Repository Pattern Later....
+// Model Should Add After DB Connected
 func main() {
-	r := setupRouter()
-	r.Run(":80")
-}
-
-func setupRouter() *gin.Engine {
 	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.String(200, "pong")
-	})
-	return r
+	routes.SetupRouter(r)
+	configs.ConnectDB()
+	configs.ConnectDB2()
+	r.Run(":80")
 }
