@@ -157,7 +157,8 @@ func WriteObjMessage(ctx *gin.Context) {
 	oid := strconv.Itoa(reqBody.ObjId)
 	message := reqBody.ObjMessage
 
-	fmt.Println("1", oid)
+	fmt.Println("objectID: ", oid)
+	fmt.Println("objectMsg: ", oid)
 	// obj 주인과 obj 작성 타입 확인
 	obj, err := model.ObjSchema.GetObjByObjId(configs.DB, oid)
 	if err != nil {
