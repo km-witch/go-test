@@ -140,6 +140,8 @@ type ReqBody_ObjMessage struct {
 // @Router       					/api/obj/msg [post]
 func WriteObjMessage(ctx *gin.Context) {
 
+	fmt.Println("writeObjMessage")
+
 	// body에 담아서 토큰 담아오기
 	var reqBody ReqBody_ObjMessage
 	user_uid := ctx.MustGet("user_uid").(string)
