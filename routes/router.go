@@ -15,7 +15,7 @@ import (
 
 func SetupRouter(r *gin.Engine) {
 	r.GET("/docs/:any", ginSwg.WrapHandler(swgFiles.Handler))
-	docs.SwaggerInfo.Host = "localhost:8080"
+	docs.SwaggerInfo.Host = "dev-go.witchworld.io"
 
 	route_block := r.Group("/api/block", AuthCheck())
 	{
