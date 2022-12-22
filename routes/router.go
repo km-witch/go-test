@@ -81,9 +81,6 @@ type authHeader struct {
 // testToken := "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOiIxMyIsIlByZUxvZ2luIjoidHJ1ZSIsImFkbWluIjoiZmFsc2UiLCJleHAiOjE2NzY4NTc1ODUsInVzZXIiOiJ0cnVlIn0.oY70FvH1M0VhFTI2DI6z_RusvcxGPn-l-3zrIEUxn2g"
 func AuthCheck() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-
-		fmt.Println("AuthCheck1")
-
 		h := authHeader{}
 		if err := ctx.ShouldBindHeader(&h); err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
@@ -92,14 +89,10 @@ func AuthCheck() gin.HandlerFunc {
 			return
 		}
 
-		fmt.Println("AuthCheck2, Token:")
-		fmt.Println(h.IDToken)
-		// 잃어버린 e 추가하기
-		tkn := "e" + strings.TrimLeft(h.IDToken, " Bearer")
-		fmt.Println(tkn)
+		// Bearer 삭제하고 넘기기
+		tokenString := strings.Replace(h.IDToken, "Bearer ", "", 1)
 
-		claim, err := controller.ValidateJWT(tkn)
-		fmt.Println("err", err)
+		claim, err := controller.ValidateJWT(tokenString)
 		if err != nil {
 			ctx.JSON(http.StatusForbidden, gin.H{
 				"error": "Token Verification Failed",
