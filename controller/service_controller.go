@@ -140,8 +140,6 @@ type ReqBody_ObjMessage struct {
 // @Router       					/api/obj/msg [post]
 func WriteObjMessage(ctx *gin.Context) {
 
-	fmt.Println("WriteObjMessage")
-	return
 	// body에 담아서 토큰 담아오기
 	var reqBody ReqBody_ObjMessage
 	user_uid := ctx.MustGet("user_uid").(string)
@@ -175,7 +173,7 @@ func WriteObjMessage(ctx *gin.Context) {
 		}
 
 		fmt.Println("2")
-		// 이미 작성했나 확인
+		// 이미 작성했나 확인 *UserAll 이 아니라, User 가 맞지 않나?
 		amount, err := model.Obj_msgSchema.GetObjMsgCountByUserAll(configs.DB, uid, oid)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
