@@ -80,7 +80,7 @@ func (om *Obj_msg) GetObjMsgCount(db *gorm.DB, objid string) (int, error) {
 
 func (om *Obj_msg) GetObjActiveMsgCount(db *gorm.DB, objid string) (int, error) {
 	var result []Obj_msg
-	err := db.Model(&result).Where("is_active=true AND id=?", objid).Find(&result).Error
+	err := db.Model(&result).Where("is_active=true AND obj_id=?", objid).Find(&result).Error
 
 	return len(result), err
 }
