@@ -2,6 +2,10 @@ package main
 
 import (
 	"flag"
+	"io"
+	"log"
+	"os"
+	"path/filepath"
 	"pkg/configs"
 	"pkg/routes"
 	"time"
@@ -13,6 +17,18 @@ import (
 // Just MVC Pattern -> Should Change Repository Pattern Later....
 // Model Should Add After DB Connected
 func main() {
+	// Initialzie Log
+	now := time.Now().Format("2006_01_02")
+	fpLog, err := os.OpenFile(filepath.Join("logs", now+".txt"), os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		panic(err)
+	}
+	defer fpLog.Close()
+
+	log.SetOutput(io.MultiWriter(fpLog, os.Stdout))
+	log.Println("Log Initialized")
+
+	// Initialize gin
 	r := gin.Default()
 	routes.SetupRouter(r)
 	configs.ConnectDB()
@@ -35,4 +51,6 @@ func main() {
 	PORT_RE := ":" + *PORT
 
 	r.Run(PORT_RE)
+
+	log.Println("System Shutdown")
 }
