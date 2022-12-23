@@ -165,7 +165,7 @@ func WriteObjMessage(ctx *gin.Context) {
 		return
 	}
 
-	log.Println("4")
+	log.Println("메세지 롤: ", obj.MsgRole)
 	// 작성을 owner만 가능한 경우
 	if obj.MsgRole == 3 {
 		if obj.User_id != uid {
@@ -227,8 +227,9 @@ func WriteObjMessage(ctx *gin.Context) {
 	// 작성을 guest만 가능한 경우
 	if obj.MsgRole == 6 {
 		if obj.User_id == uid {
+			log.Println("guest만 쓸 수 있음: ", err)
 			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"error": err,
+				"error": "guest만 쓸 수 있음",
 			})
 			return
 		}
@@ -237,13 +238,17 @@ func WriteObjMessage(ctx *gin.Context) {
 		// 작성 개수 확인 3개 미만일것
 		amount, err := model.Obj_msgSchema.GetObjMsgCountByUser(configs.DB, uid, oid)
 		if err != nil {
+			log.Println("메세지 카운트 가져오기 실패: ", err)
 			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"error": err,
+				"error": "메세지 카운트 가져오기 실패",
 			})
 			return
 		}
 		if amount >= 3 {
-			ctx.JSON(http.StatusInternalServerError, nil)
+			log.Println("3개 이상 썼음: ", err)
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"error": "3개 이상 썼음",
+			})
 			return
 		}
 
