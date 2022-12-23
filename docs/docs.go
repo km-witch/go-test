@@ -384,10 +384,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.Obj_msg"
-                            }
+                            "$ref": "#/definitions/controller.Response_ReadObjMessages"
                         }
                     }
                 }
@@ -586,6 +583,17 @@ const docTemplate = `{
                 "payload": {
                     "type": "integer",
                     "example": 24
+                }
+            }
+        },
+        "controller.Response_ReadObjMessages": {
+            "type": "object",
+            "properties": {
+                "payload": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Obj_msg"
+                    }
                 }
             }
         },

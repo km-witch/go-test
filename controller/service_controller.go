@@ -250,6 +250,10 @@ func WriteObjMessage(ctx *gin.Context) {
 	return
 }
 
+type Response_ReadObjMessages struct {
+	Payload []model.Obj_msg
+}
+
 // Obj messages 페이징 조회            godoc
 // @Summary      					Obj messages 페이징 조회
 // @Description  					Obj messages 페이징 조회
@@ -257,7 +261,7 @@ func WriteObjMessage(ctx *gin.Context) {
 // @Param        					page  	path    string  true  "페이지입력"
 // @Param        					limit  	path    string  true  "조회갯수제한"
 // @Produce      					json
-// @Success      					200  {array}  model.Obj_msg
+// @Success      					200  {object}  Response_ReadObjMessages
 // @Router       					/api/obj/msg/paging/{page}/{limit} [get]
 func ReadObjMessages(ctx *gin.Context) {
 	page := ctx.Param("page")

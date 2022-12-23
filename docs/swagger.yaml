@@ -58,6 +58,13 @@ definitions:
         example: 24
         type: integer
     type: object
+  controller.Response_ReadObjMessages:
+    properties:
+      payload:
+        items:
+          $ref: '#/definitions/model.Obj_msg'
+        type: array
+    type: object
   model.Block:
     properties:
       created_time:
@@ -491,9 +498,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/model.Obj_msg'
-            type: array
+            $ref: '#/definitions/controller.Response_ReadObjMessages'
       summary: Obj messages 페이징 조회
       tags:
       - Main
