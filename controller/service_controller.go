@@ -143,8 +143,7 @@ func WriteObjMessage(ctx *gin.Context) {
 		return
 	}
 
-	log.Println(reqBody)
-	log.Println(2)
+	log.Println("리퀘바디: ", reqBody)
 	uid, _ := strconv.Atoi(user_uid)
 	result_user, err := model.UserSchema.FindUserByUid(configs.DB, user_uid)
 	if err != nil {
@@ -155,7 +154,7 @@ func WriteObjMessage(ctx *gin.Context) {
 	uid = result_user.Id
 	oid := strconv.Itoa(reqBody.ObjId)
 	message := reqBody.ObjMessage
-	log.Println("3", oid)
+	log.Println("object ID :", oid)
 	// obj 주인과 obj 작성 타입 확인
 	obj, err := model.ObjSchema.GetObjByObjId(configs.DB, oid)
 	if err != nil {
