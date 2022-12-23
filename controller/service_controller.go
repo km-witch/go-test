@@ -168,6 +168,7 @@ func WriteObjMessage(ctx *gin.Context) {
 	// 작성을 owner만 가능한 경우
 	if obj.MsgRole == 3 {
 		if obj.User_id != uid {
+			log.Println("메세지 롤이 다릅니다: ", err)
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": "메세지 롤이 다릅니다",
 			})
@@ -179,6 +180,7 @@ func WriteObjMessage(ctx *gin.Context) {
 		// GetAllObjMsgCountByUser -> is_active false 된 메시지까지 체크라 all obj msg
 		amount, err := model.Obj_msgSchema.GetAllObjMsgCountByUser(configs.DB, uid, oid)
 		if err != nil {
+			log.Println("이미 작성됨: ", err)
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": "이미 작성됨",
 			})
@@ -189,6 +191,7 @@ func WriteObjMessage(ctx *gin.Context) {
 			// update
 			msg, err := model.Obj_msgSchema.UpdateObjMsg(configs.DB, message, oid, uid)
 			if err != nil {
+				log.Println("메세지 업데이트 실패: ", err)
 				ctx.JSON(http.StatusInternalServerError, gin.H{
 					"error": "메세지 업데이트 실패",
 				})
@@ -206,6 +209,7 @@ func WriteObjMessage(ctx *gin.Context) {
 		log.Println("4")
 		msg, err := model.Obj_msgSchema.CreateObjMsg(configs.DB, message, oid, reqBody.UserNickname, uid)
 		if err != nil {
+			log.Println("메세지 생성 실패: ", err)
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": "메세지 생성 실패",
 			})
