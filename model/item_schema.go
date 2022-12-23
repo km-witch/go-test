@@ -50,6 +50,7 @@ type Nft struct {
 	Name_en      string    `gorm:"column:name_en" json:"name_en" binding:"required"`
 	Description  string    `gorm:"column:description" json:"description" binding:"required"`
 	Properties   string    `gorm:"column:properties" json:"properties"`
+	Wallet       int       `gorm:"column:wallet_id" json:"wallet_id"`
 	Created_time time.Time `gorm:"autoCreateTime" json:"created_time"`
 	Updated_time time.Time `gorm:"autoUpdateTime" json:"updated_time"`
 }
@@ -102,7 +103,7 @@ func (n *Nft) GetNftById(db *gorm.DB, id string) (Nft, error) {
 }
 
 // Create NFT By GroupID
-func (n *Nft) CreateNftByGroupId(db *gorm.DB, groupid string) (Nft, error) {
+func (n *Nft) CreateNftByGroupId(db *gorm.DB, groupid string, walletId int) (Nft, error) {
 	// 그룹 데이터를 조회해 정보 가져오기
 	var groupData ProductGroup
 	db.Model(&ProductGroup{}).Where("id=?", groupid).Find(&groupData)
@@ -122,9 +123,16 @@ func (n *Nft) CreateNftByGroupId(db *gorm.DB, groupid string) (Nft, error) {
 	NftForm.Name_en = fmt.Sprintf("%s%s%s", groupData.Name_en, "#", nftid_str)
 	NftForm.Properties = groupData.Properties
 	NftForm.Description = groupData.Description
+	NftForm.Wallet = walletId
 
 	// NFT Table에 Insert
 	db.Create(&NftForm)
+	// Group Amount +1
+	var TnftGroup ProductGroup
+
+	// 세일 카운트 +1
+	db.Model(&TnftGroup).Where("id=?", groupid_numb).Find(&TnftGroup)
+	db.Model(&TnftGroup).Where("id=?", groupid_numb).UpdateColumn("amount", TnftGroup.Amount+1)
 
 	// Return NFT Inserted
 	return NftForm, nil

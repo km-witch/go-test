@@ -2,7 +2,6 @@ package controller
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"pkg/configs"
 	"pkg/model"
@@ -17,7 +16,6 @@ type ReqBody_Airdrop struct {
 	Amount   int    `json:"amount"`
 	MsgRole  int    `json:"msg_role"`
 	Sales_id string `json:"sale_id"` // 얘로 Tree면 2번을, 카드면 3번을 넣어주세요.
-	User_id  string `json:"user_id"`
 }
 
 // #에어드랍		              godoc
@@ -25,31 +23,43 @@ type ReqBody_Airdrop struct {
 // @Description  				#에어드랍진행 (SaleID를 기준으로 트리이거나 또는 카드가 될 수 있음, 1인당 1개씩 수령가능)
 // @Tags        				Main
 // @Security 					Authorization
+// @Param                       Authorization header string true "Bearer"
 // @Param        				ReqBody_Airdrop  	body    ReqBody_Airdrop  true  "Plz Write"
 // @Produce      				json
 // @Success      				200  {object}  model.Obj
-// @Router       				/api/item/airdrop [post]
+// @Router       				/api/obj/airdrop [post]
 func Airdrop_Item(ctx *gin.Context) {
 	var reqBody ReqBody_Airdrop
 	var sale model.Sale
 
 	// ## UID로 유저를 찾아 User ID를 반환해줘야함
 	user_uid := ctx.MustGet("user_uid").(string)
+	// UID로 UserID 찾기
+	// user_uid_int, _ := strconv.Atoi(user_uid)
+	// user_result, err := model.UserSchema.GetUserByUid(configs.DB, user_uid_int)
+	// userId_string := strconv.Itoa(user_result.Id)
+
 	user_result, err := model.UserSchema.FindUserByUid(configs.DB, user_uid)
 	if err != nil {
-		ctx.JSON(http.StatusNoContent, gin.H{
-			"error": "NO USER EXIST",
-		})
+		ctx.JSON(http.StatusNoContent, nil)
+		fmt.Println("UID 확인 실패")
+		return
 	}
 	userId_int := user_result.Id
 	userId_string := strconv.Itoa(userId_int)
 
+	// //Wallet 조회
+	// walletResult, err := model.WalletSchema.GetWalletByUserId(configs.DB, userId_string)
+	// if err != nil {
+	// 	ctx.JSON(http.StatusNoContent, nil)
+	// 	fmt.Println("Wallet 조회 실패")
+	// 	return
+	// }
+
 	// ## 바디 파싱
 	if err := ctx.ShouldBind(&reqBody); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": err,
-		})
-		log.Fatal(err)
+		ctx.JSON(http.StatusInternalServerError, nil)
+		fmt.Println("바디 파싱 실패")
 		return
 	}
 	fmt.Println("🦾 Request Body Parsing Successed")
@@ -59,21 +69,8 @@ func Airdrop_Item(ctx *gin.Context) {
 	logLen := model.SalesLogSchema.GetSalesLog(configs.DB, reqBody.Sales_id, userId_string)
 	if logLen >= 1 {
 		fmt.Println("Len Log", logLen)
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "Already Received User",
-		})
-		return
-	}
-
-	// ## 세일 확인
-	configs.DB.Model(&sale).Where("id=?", reqBody.Sales_id).Find(&sale)
-	productid_to_string := strconv.Itoa(sale.Product_id)
-	saleid_to_numb, _ := strconv.Atoi(reqBody.Sales_id)
-	result, err := model.NftSchema.CreateNftByGroupId(configs.DB, productid_to_string)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Create NFT By Group ID Failed",
-		})
+		ctx.JSON(http.StatusBadRequest, nil)
+		fmt.Println("이미받음")
 		return
 	}
 
@@ -84,11 +81,22 @@ func Airdrop_Item(ctx *gin.Context) {
 		// 월렛이 없는 유저라면 월렛생성
 		w, err := model.WalletSchema.CreateWallet(configs.DB, userId_int)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"error": "Create Wallet Failed",
-			})
+			ctx.JSON(http.StatusInternalServerError, nil)
+			fmt.Println("월렛 조회 실패")
+			return
 		}
 		wallet_id = w.Id
+	}
+
+	// ## 세일 확인
+	configs.DB.Model(&sale).Where("id=?", reqBody.Sales_id).Find(&sale)
+	productid_to_string := strconv.Itoa(sale.Product_id)
+	saleid_to_numb, _ := strconv.Atoi(reqBody.Sales_id)
+	result, err := model.NftSchema.CreateNftByGroupId(configs.DB, productid_to_string, wallet_id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, nil)
+		fmt.Println("세일 확인 및 NFT 생성 실패")
+		return
 	}
 
 	// ## NFT 트랜잭션 생성
@@ -100,10 +108,8 @@ func Airdrop_Item(ctx *gin.Context) {
 	TxForm.Nftid = result.Id
 	_, err = model.NftTxSchema.CreateTx(configs.DB, TxForm)
 	if err != nil {
-		log.Fatal(err)
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "TX Creation Failed",
-		})
+		ctx.JSON(http.StatusInternalServerError, nil)
+		fmt.Println("NFT 트랜잭션 생성 실패")
 		return
 	}
 
@@ -112,10 +118,8 @@ func Airdrop_Item(ctx *gin.Context) {
 	// 세일 ID를 통해 세일 조회
 	salesResult, err := model.SalesSchema.GetSalesById(configs.DB, reqBody.Sales_id)
 	if err != nil {
-		log.Fatal(err)
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Get Sales Failed",
-		})
+		ctx.JSON(http.StatusInternalServerError, nil)
+		fmt.Println("세일조회실패")
 		return
 	}
 
@@ -133,9 +137,9 @@ func Airdrop_Item(ctx *gin.Context) {
 	// 블록조회
 	result_block, err := model.BlockSchema.GetBlock_ByUserId(configs.DB, userId_string)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Get Block ID Failed",
-		})
+		ctx.JSON(http.StatusInternalServerError, nil)
+		fmt.Println("블록 조회 실패")
+		return
 	}
 
 	// 오브제 생성
@@ -147,12 +151,12 @@ func Airdrop_Item(ctx *gin.Context) {
 	objForm.Pos = reqBody.Pos
 	objForm.Rot = reqBody.Rot
 	objForm.Amount = reqBody.Amount
-	objForm.MsgRole = reqBody.MsgRole
+	objForm.MsgRole = reqBody.MsgRole // 3=OWNER || 6=Guest || 9=ALL // 트리는 =6 || 카드=3
 	realObj, err := model.ObjSchema.CreateObj(configs.DB, objForm)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Create Obj Failed",
-		})
+		ctx.JSON(http.StatusInternalServerError, nil)
+		fmt.Println("오브제 생성 실패")
+		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{

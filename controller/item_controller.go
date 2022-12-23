@@ -1,11 +1,9 @@
 package controller
 
 import (
-	"log"
 	"net/http"
 	"pkg/configs"
 	"pkg/model"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -80,58 +78,59 @@ type ReqForm_CreateNftByGroupId struct {
 	Walletid string `json:"wallet_id"`
 }
 
-// CreateNftByGroupId           		godoc
-// @Summary      						Create Nft By GroupId
-// @Description  						Nft ID를 넣으면 -> NFT를 반환함.
-// @Tags        						Item
-// @Accept  							json
-// @Produce      						json
-// @Param   							ReqForm_CreateNftByGroupId formData ReqForm_CreateNftByGroupId true "group_id, wallet_id"
-// @Success      						200  {object}  Resp_CreateNftByGroupId
-// @Router       						/api/item/nft/ [post]
-func CreateNftByGroupId(ctx *gin.Context) {
-	var ReqBody ReqForm_CreateNftByGroupId
-	// Group ID Bind
-	if err := ctx.ShouldBind(&ReqBody); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
-		})
-		return
-	}
+// // CreateNftByGroupId           		godoc
+// // @Summary      						Create Nft By GroupId
+// // @Description  						Nft ID를 넣으면 -> NFT를 반환함.
+// // @Tags        						Item
+// // @Accept  							json
+// // @Produce      						json
+// // @Param   							ReqForm_CreateNftByGroupId formData ReqForm_CreateNftByGroupId true "group_id, wallet_id"
+// // @Success      						200  {object}  Resp_CreateNftByGroupId
+// // @Router       						/api/item/nft/ [post]
+// func CreateNftByGroupId(ctx *gin.Context) {
+// 	var ReqBody ReqForm_CreateNftByGroupId
+// 	// Group ID Bind
+// 	if err := ctx.ShouldBind(&ReqBody); err != nil {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{
+// 			"error": err,
+// 		})
+// 		return
+// 	}
 
-	// Check Group Exist
-	_, err := model.ProductGroupSchema.GetGroupById(configs.ConnectDB(), ReqBody.Groupid)
-	if err != nil {
-		ctx.JSON(http.StatusNoContent, gin.H{
-			"error": "Group Not Exist",
-		})
-		return
-	}
+// 	// Check Group Exist
+// 	_, err := model.ProductGroupSchema.GetGroupById(configs.ConnectDB(), ReqBody.Groupid)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusNoContent, gin.H{
+// 			"error": "Group Not Exist",
+// 		})
+// 		return
+// 	}
 
-	// NFT 생성
-	result, err := model.NftSchema.CreateNftByGroupId(configs.ConnectDB(), ReqBody.Groupid)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, nil)
-	} else {
-		//Create Transaction
-		var TxForm model.NftTx
-		TxForm.Method = 0
-		TxForm.From = 0
-		TxForm.Nftid = result.Id
-		wallet_toInt, _ := strconv.Atoi(ReqBody.Walletid)
-		TxForm.To = wallet_toInt
+// 	// NFT 생성
+// 	result, err := model.NftSchema.CreateNftByGroupId(configs.ConnectDB(), ReqBody.Groupid)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, nil)
+// 	} else {
+// 		//Create Transaction
+// 		var TxForm model.NftTx
+// 		TxForm.Method = 0
+// 		TxForm.From = 0
+// 		TxForm.Nftid = result.Id
+// 		wallet_toInt, _ := strconv.Atoi(ReqBody.Walletid)
+// 		TxForm.To = wallet_toInt
 
-		tx, err := model.NftTxSchema.CreateTx(configs.ConnectDB(), TxForm)
-		if err != nil {
-			log.Fatal(err)
-		}
+// 		tx, err := model.NftTxSchema.CreateTx(configs.ConnectDB(), TxForm)
+// 		if err != nil {
+// 			// log.Fatal(err)
+// 			fmt.Println(err)
+// 		}
 
-		ctx.JSON(http.StatusOK, gin.H{
-			"nft": result,
-			"tx":  tx,
-		})
-	}
-}
+// 		ctx.JSON(http.StatusOK, gin.H{
+// 			"nft": result,
+// 			"tx":  tx,
+// 		})
+// 	}
+// }
 
 // // Create Collection
 // func CreateCollection(ctx *gin.Context) {

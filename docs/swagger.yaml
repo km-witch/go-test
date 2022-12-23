@@ -12,13 +12,9 @@ definitions:
       sale_id:
         description: 얘로 Tree면 2번을, 카드면 3번을 넣어주세요.
         type: string
-      user_id:
-        type: string
     type: object
   controller.ReqBody_ObjDel:
     properties:
-      idtoken:
-        type: string
       objId:
         type: integer
       objMsgId:
@@ -26,8 +22,6 @@ definitions:
     type: object
   controller.ReqBody_ObjMessage:
     properties:
-      idtoken:
-        type: string
       objId:
         type: integer
       objMessage:
@@ -35,17 +29,8 @@ definitions:
     type: object
   controller.ReqBody_Token:
     properties:
-      idtoken:
-        type: string
       nickName:
         type: string
-    type: object
-  controller.Resp_CreateNftByGroupId:
-    properties:
-      nft:
-        $ref: '#/definitions/model.Nft'
-      tx:
-        $ref: '#/definitions/model.NftTx'
     type: object
   controller.Resp_FindUserAndCreateBlock:
     properties:
@@ -135,32 +120,14 @@ definitions:
         type: integer
       updated_time:
         type: string
+      wallet_id:
+        type: integer
     required:
     - description
     - name_en
     - name_ko
     - product_id
     - token_id
-    type: object
-  model.NftTx:
-    properties:
-      created_time:
-        type: string
-      from:
-        type: integer
-      id:
-        type: integer
-      method:
-        type: integer
-      nft_id:
-        type: integer
-      to:
-        type: integer
-    required:
-    - from
-    - method
-    - nft_id
-    - to
     type: object
   model.Obj:
     properties:
@@ -300,28 +267,6 @@ paths:
       summary: UserId -> GetBlock
       tags:
       - Block
-  /api/item/airdrop:
-    post:
-      description: '#에어드랍진행 (SaleID를 기준으로 트리이거나 또는 카드가 될 수 있음, 1인당 1개씩 수령가능)'
-      parameters:
-      - description: Plz Write
-        in: body
-        name: ReqBody_Airdrop
-        required: true
-        schema:
-          $ref: '#/definitions/controller.ReqBody_Airdrop'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Obj'
-      security:
-      - Authorization: []
-      summary: '#에어드랍진행'
-      tags:
-      - Main
   /api/item/collection/{collectionid}:
     get:
       description: Collection ID를 넣으면 Collection을 리턴함
@@ -360,28 +305,6 @@ paths:
       summary: GetProductGroup By ID
       tags:
       - Item
-  /api/item/nft/:
-    post:
-      consumes:
-      - application/json
-      description: Nft ID를 넣으면 -> NFT를 반환함.
-      parameters:
-      - in: formData
-        name: group_id
-        type: string
-      - in: formData
-        name: wallet_id
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controller.Resp_CreateNftByGroupId'
-      summary: Create Nft By GroupId
-      tags:
-      - Item
   /api/item/nft/{nftid}:
     get:
       description: Nft ID를 넣으면 -> NFT를 반환함.
@@ -401,6 +324,33 @@ paths:
       summary: GetNftById By ID
       tags:
       - Item
+  /api/obj/airdrop:
+    post:
+      description: '#에어드랍진행 (SaleID를 기준으로 트리이거나 또는 카드가 될 수 있음, 1인당 1개씩 수령가능)'
+      parameters:
+      - description: Bearer
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Plz Write
+        in: body
+        name: ReqBody_Airdrop
+        required: true
+        schema:
+          $ref: '#/definitions/controller.ReqBody_Airdrop'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Obj'
+      security:
+      - Authorization: []
+      summary: '#에어드랍진행'
+      tags:
+      - Main
   /api/obj/block/{blockid}:
     get:
       description: '#Obj 조회 By BlockID'
@@ -426,7 +376,12 @@ paths:
     post:
       description: 유저의 블록 보유 확인 후 (없으면 생성 후)리턴
       parameters:
-      - description: Write User obj message data
+      - description: Bearer
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Write User obj id and message
         in: body
         name: ReqBody_ObjMessage
         required: true
@@ -439,6 +394,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.Obj_msg'
+      security:
+      - Authorization: []
       summary: obj message 작성
       tags:
       - Main
@@ -486,7 +443,12 @@ paths:
     post:
       description: Obj msg의 is_active 값을 변경해 삭제처리 한다
       parameters:
-      - description: Write User obj message data
+      - description: Bearer
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Write User obj id and obj_msg id
         in: body
         name: ReqBody_ObjDel
         required: true
@@ -499,6 +461,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.Obj_msg'
+      security:
+      - Authorization: []
       summary: Obj msg 삭제
       tags:
       - Main
@@ -549,6 +513,11 @@ paths:
     post:
       description: 유저의 블록 보유 확인 후 (없으면 생성 후)리턴
       parameters:
+      - description: Bearer
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Write User Token
         in: body
         name: ReqBody_Token
@@ -562,7 +531,9 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/controller.Resp_FindUserBlockData'
-      summary: 유저의 블록 보유 확인 및 생성
+      security:
+      - Authorization: []
+      summary: '#유저 접속시 호출 초기화 및 유저 조회'
       tags:
       - Main
 swagger: "2.0"

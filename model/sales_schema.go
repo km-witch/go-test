@@ -49,7 +49,13 @@ func (sl *Saleslog) GetSalesLog(db *gorm.DB, sid string, uid string) int {
 // SaleLog 생성
 func (sl *Saleslog) CreateSalesLog(db *gorm.DB, salelog Saleslog) (Saleslog, error) {
 	var userInput Saleslog
+	var saleDB Sale
 	userInput = salelog
 	db.Create(&userInput)
+
+	// 세일 카운트 +1
+	db.Model(&saleDB).Where("id=?", userInput.Sale_id).Find(&saleDB)
+	db.Model(&saleDB).Where("id=?", userInput.Sale_id).UpdateColumn("sale_count", saleDB.Sale_count+1)
+
 	return userInput, nil
 }

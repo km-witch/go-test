@@ -7,7 +7,6 @@ import (
 	"pkg/controller"
 	"pkg/docs"
 	"pkg/model"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	swgFiles "github.com/swaggo/files"
@@ -17,6 +16,7 @@ import (
 func SetupRouter(r *gin.Engine) {
 	r.GET("/docs/:any", ginSwg.WrapHandler(swgFiles.Handler))
 	docs.SwaggerInfo.Host = "dev-go.witchworld.io"
+	// docs.SwaggerInfo.Host = "localhost:8080"
 
 	route_block := r.Group("/api/block", AuthCheck())
 	{
@@ -37,7 +37,7 @@ func SetupRouter(r *gin.Engine) {
 		route_item.GET("/nft/:nftid", controller.GetNftById)
 		route_item.GET("/group/:groupid", controller.GetProductGroupById)
 		route_item.GET("/collection/:collectionid", controller.GetCollectionById)
-		route_item.POST("/nft", controller.CreateNftByGroupId)
+		// route_item.POST("/nft", controller.CreateNftByGroupId)
 	}
 	route_main := r.Group("/api")
 	{
@@ -57,22 +57,22 @@ func SetupRouter(r *gin.Engine) {
 	// 	route_item.GET("/blockid/:blockid", controller.GetObjsByBlockId)
 	// }
 	configs.DB.AutoMigrate(&model.Obj_msg{}, &model.Sale{}, &model.Saleslog{}, &model.Obj{}, &model.Block{}, &model.NftTx{}, &model.Wallet{}, &model.User{}, &model.AccessLog{}, &model.Profile{})
-	r.Use(CORS())
+	// r.Use(CORS())
 }
 
-func CORS() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, X-Forwarded-For, Authorization, accept, origin, Cache-Control, X-Requested-With")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
-		if c.Request.Method == "OPTIONS" {
-			c.AbortWithStatus(204)
-			return
-		}
-		c.Next()
-	}
-}
+// func CORS() gin.HandlerFunc {
+// 	return func(c *gin.Context) {
+// 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+// 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+// 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, X-Forwarded-For, Authorization, accept, origin, Cache-Control, X-Requested-With")
+// 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
+// 		if c.Request.Method == "OPTIONS" {
+// 			c.AbortWithStatus(204)
+// 			return
+// 		}
+// 		c.Next()
+// 	}
+// }
 
 type authHeader struct {
 	IDToken string `header:"Authorization"`
@@ -83,21 +83,13 @@ func AuthCheck() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		h := authHeader{}
 		if err := ctx.ShouldBindHeader(&h); err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{
-				"error": "Plz Add Your Token",
-			})
+			ctx.JSON(http.StatusBadRequest, nil)
 			return
 		}
 
-		// Bearer 삭제하고 넘기기
-		tokenString := strings.Replace(h.IDToken, "Bearer ", "", 1)
-		fmt.Println("AuthCheck: ", tokenString)
-
-		claim, err := controller.ValidateJWT(tokenString)
+		claim, err := controller.ValidateJWT(h.IDToken)
 		if err != nil {
-			ctx.JSON(http.StatusForbidden, gin.H{
-				"error": "Token Verification Failed",
-			})
+			ctx.JSON(http.StatusForbidden, nil)
 			return
 		}
 

@@ -73,7 +73,7 @@ func (om *Obj_msg) GetObjMsgCountByUser(db *gorm.DB, uid int, objid string) (int
 
 	return len(result), err
 }
-func (om *Obj_msg) GetObjMsgCountByUserAll(db *gorm.DB, uid int, objid string) (int, error) {
+func (om *Obj_msg) GetAllObjMsgCountByUser(db *gorm.DB, uid int, objid string) (int, error) {
 	var result []Obj_msg
 	err := db.Model(&result).Where("id=? AND created_user=?", objid, uid).Find(&result).Error
 

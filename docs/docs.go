@@ -74,42 +74,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/item/airdrop": {
-            "post": {
-                "security": [
-                    {
-                        "Authorization": []
-                    }
-                ],
-                "description": "#에어드랍진행 (SaleID를 기준으로 트리이거나 또는 카드가 될 수 있음, 1인당 1개씩 수령가능)",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Main"
-                ],
-                "summary": "#에어드랍진행",
-                "parameters": [
-                    {
-                        "description": "Plz Write",
-                        "name": "ReqBody_Airdrop",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controller.ReqBody_Airdrop"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.Obj"
-                        }
-                    }
-                }
-            }
-        },
         "/api/item/collection/{collectionid}": {
             "get": {
                 "description": "Collection ID를 넣으면 Collection을 리턴함",
@@ -168,41 +132,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/item/nft/": {
-            "post": {
-                "description": "Nft ID를 넣으면 -\u003e NFT를 반환함.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Item"
-                ],
-                "summary": "Create Nft By GroupId",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "name": "group_id",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "name": "wallet_id",
-                        "in": "formData"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/controller.Resp_CreateNftByGroupId"
-                        }
-                    }
-                }
-            }
-        },
         "/api/item/nft/{nftid}": {
             "get": {
                 "description": "Nft ID를 넣으면 -\u003e NFT를 반환함.",
@@ -227,6 +156,49 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/model.Nft"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/obj/airdrop": {
+            "post": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
+                "description": "#에어드랍진행 (SaleID를 기준으로 트리이거나 또는 카드가 될 수 있음, 1인당 1개씩 수령가능)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Main"
+                ],
+                "summary": "#에어드랍진행",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Plz Write",
+                        "name": "ReqBody_Airdrop",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.ReqBody_Airdrop"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Obj"
                         }
                     }
                 }
@@ -266,6 +238,11 @@ const docTemplate = `{
         },
         "/api/obj/msg": {
             "post": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
                 "description": "유저의 블록 보유 확인 후 (없으면 생성 후)리턴",
                 "produces": [
                     "application/json"
@@ -276,7 +253,14 @@ const docTemplate = `{
                 "summary": "obj message 작성",
                 "parameters": [
                     {
-                        "description": "Write User obj message data",
+                        "type": "string",
+                        "description": "Bearer",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Write User obj id and message",
                         "name": "ReqBody_ObjMessage",
                         "in": "body",
                         "required": true,
@@ -329,6 +313,11 @@ const docTemplate = `{
         },
         "/api/obj/msg/del": {
             "post": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
                 "description": "Obj msg의 is_active 값을 변경해 삭제처리 한다",
                 "produces": [
                     "application/json"
@@ -339,7 +328,14 @@ const docTemplate = `{
                 "summary": "Obj msg 삭제",
                 "parameters": [
                     {
-                        "description": "Write User obj message data",
+                        "type": "string",
+                        "description": "Bearer",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Write User obj id and obj_msg id",
                         "name": "ReqBody_ObjDel",
                         "in": "body",
                         "required": true,
@@ -456,6 +452,11 @@ const docTemplate = `{
         },
         "/api/user/": {
             "post": {
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ],
                 "description": "유저의 블록 보유 확인 후 (없으면 생성 후)리턴",
                 "produces": [
                     "application/json"
@@ -463,8 +464,15 @@ const docTemplate = `{
                 "tags": [
                     "Main"
                 ],
-                "summary": "유저의 블록 보유 확인 및 생성",
+                "summary": "#유저 접속시 호출 초기화 및 유저 조회",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "Write User Token",
                         "name": "ReqBody_Token",
@@ -505,18 +513,12 @@ const docTemplate = `{
                 "sale_id": {
                     "description": "얘로 Tree면 2번을, 카드면 3번을 넣어주세요.",
                     "type": "string"
-                },
-                "user_id": {
-                    "type": "string"
                 }
             }
         },
         "controller.ReqBody_ObjDel": {
             "type": "object",
             "properties": {
-                "idtoken": {
-                    "type": "string"
-                },
                 "objId": {
                     "type": "integer"
                 },
@@ -528,9 +530,6 @@ const docTemplate = `{
         "controller.ReqBody_ObjMessage": {
             "type": "object",
             "properties": {
-                "idtoken": {
-                    "type": "string"
-                },
                 "objId": {
                     "type": "integer"
                 },
@@ -542,22 +541,8 @@ const docTemplate = `{
         "controller.ReqBody_Token": {
             "type": "object",
             "properties": {
-                "idtoken": {
-                    "type": "string"
-                },
                 "nickName": {
                     "type": "string"
-                }
-            }
-        },
-        "controller.Resp_CreateNftByGroupId": {
-            "type": "object",
-            "properties": {
-                "nft": {
-                    "$ref": "#/definitions/model.Nft"
-                },
-                "tx": {
-                    "$ref": "#/definitions/model.NftTx"
                 }
             }
         },
@@ -699,34 +684,8 @@ const docTemplate = `{
                 },
                 "updated_time": {
                     "type": "string"
-                }
-            }
-        },
-        "model.NftTx": {
-            "type": "object",
-            "required": [
-                "from",
-                "method",
-                "nft_id",
-                "to"
-            ],
-            "properties": {
-                "created_time": {
-                    "type": "string"
                 },
-                "from": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "method": {
-                    "type": "integer"
-                },
-                "nft_id": {
-                    "type": "integer"
-                },
-                "to": {
+                "wallet_id": {
                     "type": "integer"
                 }
             }

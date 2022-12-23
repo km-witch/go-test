@@ -2,7 +2,6 @@ package controller
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"pkg/configs"
 	"pkg/model"
@@ -20,33 +19,32 @@ type Resp_FindUserBlockData struct {
 	Objs  []model.Obj
 }
 
-// FindUserAndCreateBlock           godoc
-// @Summary      					유저의 블록 보유 확인 및 생성
+// UserBlockAccess          		godoc
+// @Summary      					#유저 접속시 호출 초기화 및 유저 조회
 // @Description  					유저의 블록 보유 확인 후 (없으면 생성 후)리턴
 // @Tags        					Main
+// @Param                           Authorization header string true "Bearer"
 // @Param        					ReqBody_Token body ReqBody_Token true "Write User Token"
 // @Produce      					json
+// @Security 					    Authorization
 // @Success      					200  {object}  Resp_FindUserBlockData
 // @Router       					/api/user/ [post]
 func UserBlockAccess(ctx *gin.Context) {
 	// body에 담아서 토큰 담아오기
+	fmt.Println("UserBlockAccess")
 	var reqBody ReqBody_Token
 	user_uid := ctx.MustGet("user_uid").(string)
-
+	fmt.Println("1")
 	if err := ctx.ShouldBind(&reqBody); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": err,
-		})
-		log.Fatal(err)
-		return
-	}
-	claim, err := ValidateJWT(user_uid)
-	if err != nil {
-		ctx.JSON(http.StatusForbidden, nil)
+		ctx.JSON(http.StatusInternalServerError, nil)
+		fmt.Println("Bind ERR:", err)
+		// log.Fatal(err)
+		fmt.Println(err)
 		return
 	}
 
-	uid, _ := strconv.Atoi(claim.UID)
+	fmt.Println("2")
+	uid, _ := strconv.Atoi(user_uid)
 
 	// 유저 table에 존재하나 확인 없으면 생성
 	user, err := model.UserSchema.GetUserByUid(configs.DB, uid)
@@ -54,69 +52,61 @@ func UserBlockAccess(ctx *gin.Context) {
 		user, err = model.UserSchema.CreateUserByUid(configs.DB, uid)
 
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"error": err,
-			})
+			ctx.JSON(http.StatusInternalServerError, nil)
 			return
 		}
 	}
 	uid = user.Uid
+	user_id_string := strconv.Itoa(user.Id)
+	fmt.Println("3")
 
 	// 지갑 존재 하나 확인 없으면 생성
-	_, werr := model.WalletSchema.GetWalletByUserId(configs.DB, claim.UID)
+	_, werr := model.WalletSchema.GetWalletByUserId(configs.DB, user_id_string)
 	if werr != nil {
-		_, wcrr := model.WalletSchema.CreateWallet(configs.DB, uid)
+		// 월렛이 없다면 월렛 생성
+		_, wcrr := model.WalletSchema.CreateWallet(configs.DB, user.Id)
 
 		if wcrr != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"error": wcrr,
-			})
+			ctx.JSON(http.StatusInternalServerError, nil)
 			return
 		}
 	}
-
+	fmt.Println("4")
 	// profile table 존재하나 확인 없으면 생성
-	_, perr := model.ProfileSchema.GetProfileByUserId(configs.DB, uid)
+	_, perr := model.ProfileSchema.GetProfileByUserId(configs.DB, user.Id)
 	if perr != nil {
-		_, perr := model.WalletSchema.CreateWallet(configs.DB, uid)
+		_, perr := model.ProfileSchema.CreateProfile(configs.DB, user.Id)
 
 		if perr != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"error": perr,
-			})
+			ctx.JSON(http.StatusInternalServerError, nil)
 			return
 		}
 	}
-
+	fmt.Println("5")
 	// block 존재하나 확인 없으면 생성 -> user 정보에 block id추가
-	block, berr := model.BlockSchema.GetBlock_ByUserId(configs.DB, claim.UID)
-	fmt.Println(claim.UID, block.Id)
+	block, berr := model.BlockSchema.GetBlock_ByUserId(configs.DB, user_id_string)
+	fmt.Println(user_uid, block.Id)
 	if berr != nil {
-		block.User_id = uid
+		block.User_id = user.Id
 		block.Thema = "Empty"
 		block.Name = reqBody.NickName
 		block, berr = model.BlockSchema.CreateBlock(configs.DB, block)
 		if berr != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"error": berr,
-			})
+			ctx.JSON(http.StatusInternalServerError, nil)
 			return
 		}
 	}
-
+	fmt.Println("6")
 	// block의 obj 정보 return
-	objs, _ := model.ObjSchema.GetObjsByUserId(configs.DB, claim.UID)
+	objs, _ := model.ObjSchema.GetObjsByUserId(configs.DB, user_id_string)
 
 	// block access log 생성(최신화) 후 값 저장 -> access id
 	fmt.Println("7")
-	_, aerr := model.AccessLogSchema.BlockAccess(configs.DB, uid, block.Id)
+	_, aerr := model.AccessLogSchema.BlockAccess(configs.DB, user.Id, block.Id)
 	if aerr != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": aerr,
-		})
+		ctx.JSON(http.StatusInternalServerError, nil)
 		return
 	}
-
 	// return
 	ctx.JSON(http.StatusOK, gin.H{
 		"blockdata": block,
@@ -134,14 +124,13 @@ type ReqBody_ObjMessage struct {
 // @Summary      					obj message 작성
 // @Description  					유저의 블록 보유 확인 후 (없으면 생성 후)리턴
 // @Tags        					Main
-// @Param        					ReqBody_ObjMessage body ReqBody_ObjMessage true "Write User obj message data"
+// @Param                           Authorization header string true "Bearer"
+// @Param        					ReqBody_ObjMessage body ReqBody_ObjMessage true "Write User obj id and message"
 // @Produce      					json
+// @Security 					    Authorization
 // @Success      					200  {object}  model.Obj_msg
 // @Router       					/api/obj/msg [post]
 func WriteObjMessage(ctx *gin.Context) {
-
-	fmt.Println("writeObjMessage")
-
 	// body에 담아서 토큰 담아오기
 	var reqBody ReqBody_ObjMessage
 	user_uid := ctx.MustGet("user_uid").(string)
@@ -149,7 +138,7 @@ func WriteObjMessage(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": err,
 		})
-		//log.Fatal(err)
+		// log.Fatal(err)
 		fmt.Println(err)
 		return
 	}
@@ -158,10 +147,7 @@ func WriteObjMessage(ctx *gin.Context) {
 	oid := strconv.Itoa(reqBody.ObjId)
 	message := reqBody.ObjMessage
 
-	fmt.Println("uid: ", uid)
-	fmt.Println("objectID: ", oid)
-	fmt.Println("objectMsg: ", message)
-
+	fmt.Println("1", oid)
 	// obj 주인과 obj 작성 타입 확인
 	obj, err := model.ObjSchema.GetObjByObjId(configs.DB, oid)
 	if err != nil {
@@ -179,8 +165,9 @@ func WriteObjMessage(ctx *gin.Context) {
 		}
 
 		fmt.Println("2")
-		// 이미 작성했나 확인 *UserAll 이 아니라, User 가 맞지 않나?
-		amount, err := model.Obj_msgSchema.GetObjMsgCountByUserAll(configs.DB, uid, oid)
+		// 이미 작성했나 확인
+		// GetAllObjMsgCountByUser -> is_active false 된 메시지까지 체크라 all obj msg
+		amount, err := model.Obj_msgSchema.GetAllObjMsgCountByUser(configs.DB, uid, oid)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": err,
@@ -264,8 +251,10 @@ type ReqBody_ObjDel struct {
 // @Summary      					Obj msg 삭제
 // @Description  					Obj msg의 is_active 값을 변경해 삭제처리 한다
 // @Tags        					Main
-// @Param        					ReqBody_ObjDel body ReqBody_ObjDel true "Write User obj message data"
+// @Param                           Authorization header string true "Bearer"
+// @Param        					ReqBody_ObjDel body ReqBody_ObjDel true "Write User obj id and obj_msg id"
 // @Produce      					json
+// @Security 					    Authorization
 // @Success      					200  {object}  model.Obj_msg
 // @Router       					/api/obj/msg/del [post]
 func DeleteObjMsg(ctx *gin.Context) {
@@ -276,7 +265,8 @@ func DeleteObjMsg(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": err,
 		})
-		log.Fatal(err)
+		// log.Fatal(err)
+		fmt.Println(err)
 		return
 	}
 
