@@ -306,7 +306,7 @@ paths:
             $ref: '#/definitions/controller.Resp_FindUserAndCreateBlock'
       summary: 유저의 블록 보유 확인 및 생성
       tags:
-      - Block
+      - Ready
   /api/block/get/{userid}:
     get:
       description: UserId 를 통해 Block정보를 가져옴.
@@ -325,7 +325,7 @@ paths:
             $ref: '#/definitions/model.Block'
       summary: UserId -> GetBlock
       tags:
-      - Block
+      - Ready
   /api/item/collection/{collectionid}:
     get:
       description: Collection ID를 넣으면 Collection을 리턴함
@@ -344,7 +344,7 @@ paths:
             $ref: '#/definitions/model.Collection'
       summary: Collection By ID
       tags:
-      - Item
+      - Ready
   /api/item/group/{groupid}:
     get:
       description: Product Group ID를 넣으면 -> Group을 반환함.
@@ -363,7 +363,7 @@ paths:
             $ref: '#/definitions/model.ProductGroup'
       summary: GetProductGroup By ID
       tags:
-      - Item
+      - Ready
   /api/item/nft/{nftid}:
     get:
       description: Nft ID를 넣으면 -> NFT를 반환함.
@@ -382,7 +382,7 @@ paths:
             $ref: '#/definitions/model.Nft'
       summary: GetNftById By ID
       tags:
-      - Item
+      - Ready
   /api/obj/airdrop:
     post:
       description: '#에어드랍진행 (SaleID를 기준으로 트리이거나 또는 카드가 될 수 있음, 1인당 1개씩 수령가능)'
@@ -476,7 +476,7 @@ paths:
             $ref: '#/definitions/model.Obj_msg'
       summary: Obj Msg 단일 조회
       tags:
-      - Obj
+      - Ready
   /api/obj/msg/count/{obj_id}:
     get:
       description: Obj Message 갯수 조회 기능 (트리 크기 조정용)
@@ -497,7 +497,7 @@ paths:
           description: Bad Request
       summary: Obj Message 갯수 조회 기능 (트리 크기 조정용)
       tags:
-      - Obj
+      - Ready
   /api/obj/msg/del:
     post:
       description: Obj msg의 is_active 값을 변경해 삭제처리 한다

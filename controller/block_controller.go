@@ -12,7 +12,7 @@ import (
 // GetBlock_ByUserId		          godoc
 // @Summary      					  UserId -> GetBlock
 // @Description  					  UserId 를 통해 Block정보를 가져옴.
-// @Tags        					  Block
+// @Tags        					  Ready
 // @Param        					  userid  	path    string   true  "Write Block ID"
 // @Produce      					  json
 // @Success      					  200  {object}  model.Block
@@ -37,7 +37,7 @@ type Resp_FindUserAndCreateBlock struct {
 // FindUserAndCreateBlock           godoc
 // @Summary      					유저의 블록 보유 확인 및 생성
 // @Description  					유저의 블록 보유 확인 후 (없으면 생성 후)리턴
-// @Tags        					Block
+// @Tags        					Ready
 // @Param        					userid  	path    string  true  "Write Block ID"
 // @Produce      					json
 // @Success      					200  {object}  Resp_FindUserAndCreateBlock

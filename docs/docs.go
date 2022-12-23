@@ -23,7 +23,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Block"
+                    "Ready"
                 ],
                 "summary": "유저의 블록 보유 확인 및 생성",
                 "parameters": [
@@ -52,7 +52,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Block"
+                    "Ready"
                 ],
                 "summary": "UserId -\u003e GetBlock",
                 "parameters": [
@@ -81,7 +81,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Item"
+                    "Ready"
                 ],
                 "summary": "Collection By ID",
                 "parameters": [
@@ -110,7 +110,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Item"
+                    "Ready"
                 ],
                 "summary": "GetProductGroup By ID",
                 "parameters": [
@@ -139,7 +139,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Item"
+                    "Ready"
                 ],
                 "summary": "GetNftById By ID",
                 "parameters": [
@@ -286,7 +286,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Obj"
+                    "Ready"
                 ],
                 "summary": "Obj Message 갯수 조회 기능 (트리 크기 조정용)",
                 "parameters": [
@@ -397,7 +397,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Obj"
+                    "Ready"
                 ],
                 "summary": "Obj Msg 단일 조회",
                 "parameters": [

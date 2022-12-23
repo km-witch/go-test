@@ -11,7 +11,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Block"
+                    "Ready"
                 ],
                 "summary": "유저의 블록 보유 확인 및 생성",
                 "parameters": [
@@ -40,7 +40,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Block"
+                    "Ready"
                 ],
                 "summary": "UserId -\u003e GetBlock",
                 "parameters": [
@@ -69,7 +69,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Item"
+                    "Ready"
                 ],
                 "summary": "Collection By ID",
                 "parameters": [
@@ -98,7 +98,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Item"
+                    "Ready"
                 ],
                 "summary": "GetProductGroup By ID",
                 "parameters": [
@@ -127,7 +127,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Item"
+                    "Ready"
                 ],
                 "summary": "GetNftById By ID",
                 "parameters": [
@@ -274,7 +274,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Obj"
+                    "Ready"
                 ],
                 "summary": "Obj Message 갯수 조회 기능 (트리 크기 조정용)",
                 "parameters": [
@@ -385,7 +385,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Obj"
+                    "Ready"
                 ],
                 "summary": "Obj Msg 단일 조회",
                 "parameters": [

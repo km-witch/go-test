@@ -15,7 +15,7 @@ type Resp_GetMessageCount struct {
 // GetObjMessageCount     	godoc
 // @Summary         		Obj Message 갯수 조회 기능 (트리 크기 조정용)
 // @Description     		Obj Message 갯수 조회 기능 (트리 크기 조정용)
-// @Tags            		Obj
+// @Tags            		Ready
 // @Param           		obj_id path int true "Object id"
 // @Produce         		json
 // @Success         		200 {object} Resp_GetMessageCount
@@ -35,7 +35,7 @@ func GetObjMessageCount(ctx *gin.Context) {
 // // GetObj_by_blockid           	godoc
 // // @Summary      				블록아이디로 오브제를 가져오는 API
 // // @Description  				블록아이디를 넣으면 오브제를 리턴함.
-// // @Tags        				Obj
+// // @Tags        					Ready
 // // @Param        				blockid  	path    string  true  "Write Block ID"
 // // @Produce      				json
 // // @Success      				200  {object}  model.Obj
@@ -66,7 +66,7 @@ func GetObjMessageCount(ctx *gin.Context) {
 // // 에어드랍		            		godoc
 // // @Summary      				에어드랍진행 !
 // // @Description  				Wallet생성도 해주고, NFT 생성 해주고, Obj 생성!
-// // @Tags        				Obj
+// // @Tags        					Ready
 // // @Param        				ReqBody_Airdrop  	body    ReqBody_Airdrop  true  "Write Block ID"
 // // @Produce      				json
 // // @Success      				200  {object}  model.Obj
@@ -152,7 +152,7 @@ func GetObjMessageCount(ctx *gin.Context) {
 // Obj 메세지 조회           	   godoc
 // @Summary      				Obj Msg 단일 조회
 // @Description  				Obj Msg 단일 조회 기능 (단일, ID값 기준)
-// @Tags        				Obj
+// @Tags        				Ready
 // @Param        				id  	path    string  true  "오브제 메세지 ID"
 // @Produce      				json
 // @Success      				200  {object}  model.Obj_msg

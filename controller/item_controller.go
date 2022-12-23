@@ -11,7 +11,7 @@ import (
 // GetCollectionById            godoc
 // @Summary      				Collection By ID
 // @Description  				Collection ID를 넣으면 Collection을 리턴함
-// @Tags        				Item
+// @Tags        				Ready
 // @Param        				collectionid  	path    string  true  "Write Block ID"
 // @Produce      				json
 // @Success      				200  {object}  model.Collection
@@ -31,7 +31,7 @@ func GetCollectionById(ctx *gin.Context) {
 // GetProductGroupById          godoc
 // @Summary      				GetProductGroup By ID
 // @Description  				Product Group ID를 넣으면 -> Group을 반환함.
-// @Tags        				Item
+// @Tags        				Ready
 // @Param        				groupid  	path    string  true  "Write Block ID"
 // @Produce      				json
 // @Success      				200  {object}  model.ProductGroup
@@ -51,7 +51,7 @@ func GetProductGroupById(ctx *gin.Context) {
 // GetNftById           		godoc
 // @Summary      				GetNftById By ID
 // @Description  				Nft ID를 넣으면 -> NFT를 반환함.
-// @Tags        				Item
+// @Tags        				Ready
 // @Param        				nftid  	path    string  true  "Write Nft ID"
 // @Produce      				json
 // @Success      				200  {object}  model.Nft
@@ -81,7 +81,7 @@ type ReqForm_CreateNftByGroupId struct {
 // // CreateNftByGroupId           		godoc
 // // @Summary      						Create Nft By GroupId
 // // @Description  						Nft ID를 넣으면 -> NFT를 반환함.
-// // @Tags        						Item
+// // @Tags        						Ready
 // // @Accept  							json
 // // @Produce      						json
 // // @Param   							ReqForm_CreateNftByGroupId formData ReqForm_CreateNftByGroupId true "group_id, wallet_id"

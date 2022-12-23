@@ -384,5 +384,4 @@ func DeleteObjMsg(ctx *gin.Context) {
 
 	fmt.Println("7")
 	ctx.JSON(http.StatusInternalServerError, nil)
-	return
 }
