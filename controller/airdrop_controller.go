@@ -62,7 +62,7 @@ func Airdrop_Item(ctx *gin.Context) {
 
 	// ## 바디 파싱
 	if err := ctx.ShouldBind(&reqBody); err != nil {
-		ctx.JSON(http.StatusInternalServerError, nil)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"message": "바디 파싱 실패"})
 		log.Println("바디 파싱 실패")
 		return
 	}
@@ -72,8 +72,7 @@ func Airdrop_Item(ctx *gin.Context) {
 	// 트리 1개, 방명록 1개 에어드랍가능. ✅
 	logLen := model.SalesLogSchema.GetSalesLog(configs.DB, reqBody.Sales_id, userId_string)
 	if logLen >= 1 {
-		log.Println("Len Log", logLen)
-		ctx.JSON(http.StatusBadRequest, nil)
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "이미 받음"})
 		log.Println("이미받음")
 		return
 	}
@@ -85,7 +84,7 @@ func Airdrop_Item(ctx *gin.Context) {
 		// 월렛이 없는 유저라면 월렛생성
 		w, err := model.WalletSchema.CreateWallet(configs.DB, userId_int)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, nil)
+			ctx.JSON(http.StatusInternalServerError, gin.H{"message": "월렛 조회 실패"})
 			log.Println("월렛 조회 실패")
 			return
 		}
