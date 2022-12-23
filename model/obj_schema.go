@@ -30,6 +30,7 @@ type Obj_msg struct {
 	ObjId        int       `gorm:"column:obj_id" json:"obj_id" binding:"required"`
 	Message      string    `gorm:"column:message" json:"message" binding:"required"`
 	Created_user int       `gorm:"column:created_user" json:"created_user" binding:"required"`
+	UserNickname string    `gorm:"column:user_nickname" json:"user_nickname" binding:"required"`
 	Updated_user int       `gorm:"column:updated_user" json:"updated_user" binding:"required"`
 	IsActive     bool      `gorm:"column:is_active" json:"is_active"`
 	Created_at   time.Time `gorm:"autoCreateTime"`
@@ -81,7 +82,7 @@ func (om *Obj_msg) GetAllObjMsgCountByUser(db *gorm.DB, uid int, objid string) (
 }
 
 // Obj Msg 조회
-func (om *Obj_msg) CreateObjMsg(db *gorm.DB, message, oid string, uid int) (Obj_msg, error) {
+func (om *Obj_msg) CreateObjMsg(db *gorm.DB, message, oid, nickname string, uid int) (Obj_msg, error) {
 	var result Obj_msg
 	var obj Obj
 
@@ -90,8 +91,13 @@ func (om *Obj_msg) CreateObjMsg(db *gorm.DB, message, oid string, uid int) (Obj_
 	result.Created_user = uid
 	result.Updated_user = uid
 	result.IsActive = true
+	result.UserNickname = nickname
 
-	db.Model(&result).Create(&result)
+	err := db.Model(&result).Create(&result).Error
+	if err != nil {
+		return result, errors.New("Create Failed")
+	}
+
 	db.Model(&obj).Find(&obj, result.ObjId)
 	db.Model(Obj{}).Where("id=?", result.ObjId).UpdateColumn("amount", obj.Amount+1)
 
@@ -126,7 +132,11 @@ func (om *Obj_msg) UpdateObjMsgIsActive(db *gorm.DB, obj_msg_id string) (Obj_msg
 	var result Obj_msg
 	var obj Obj
 
-	db.Model(&result).Where("id=?", obj_msg_id).UpdateColumn("is_active", false)
+	err := db.Model(&result).Where("id=?", obj_msg_id).UpdateColumn("is_active", false).Error
+	if err != nil {
+		return result, errors.New("Updated Failed")
+	}
+
 	db.Model(&result).Where("id=?", obj_msg_id).Find(&result)
 
 	db.Model(&obj).Find(&obj, result.ObjId)

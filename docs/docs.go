@@ -384,7 +384,10 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Obj_msg"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Obj_msg"
+                            }
                         }
                     }
                 }
@@ -534,6 +537,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "objMessage": {
+                    "type": "string"
+                },
+                "userNickname": {
                     "type": "string"
                 }
             }
@@ -744,7 +750,8 @@ const docTemplate = `{
                 "created_user",
                 "message",
                 "obj_id",
-                "updated_user"
+                "updated_user",
+                "user_nickname"
             ],
             "properties": {
                 "created_at": {
@@ -771,6 +778,9 @@ const docTemplate = `{
                 },
                 "updated_user": {
                     "type": "integer"
+                },
+                "user_nickname": {
+                    "type": "string"
                 }
             }
         },

@@ -7,6 +7,7 @@ import (
 	"pkg/controller"
 	"pkg/docs"
 	"pkg/model"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	swgFiles "github.com/swaggo/files"
@@ -87,7 +88,8 @@ func AuthCheck() gin.HandlerFunc {
 			return
 		}
 
-		claim, err := controller.ValidateJWT(h.IDToken)
+		tokenString := strings.Replace(h.IDToken, "Bearer ", "", 1)
+		claim, err := controller.ValidateJWT(tokenString)
 		if err != nil {
 			ctx.JSON(http.StatusForbidden, nil)
 			return

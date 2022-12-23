@@ -32,32 +32,6 @@ func GetObjMessageCount(ctx *gin.Context) {
 	})
 }
 
-// Obj messages 페이징 조회            godoc
-// @Summary      					Obj messages 페이징 조회
-// @Description  					Obj messages 페이징 조회
-// @Tags        					Main
-// @Param        					page  	path    string  true  "페이지입력"
-// @Param        					limit  	path    string  true  "조회갯수제한"
-// @Produce      					json
-// @Success      					200  {object}  model.Obj_msg
-// @Router       					/api/obj/msg/paging/{page}/{limit} [get]
-func ReadObjMessages(ctx *gin.Context) {
-	page := ctx.Param("page")
-	limit := ctx.Param("limit")
-
-	resultObjs, err := model.Obj_msgSchema.GetObjMsgs(configs.DB, page, limit)
-	if err != nil {
-		ctx.JSON(http.StatusNoContent, gin.H{
-			"payload": resultObjs,
-		})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"payload": resultObjs,
-	})
-}
-
 // // GetObj_by_blockid           	godoc
 // // @Summary      				블록아이디로 오브제를 가져오는 API
 // // @Description  				블록아이디를 넣으면 오브제를 리턴함.

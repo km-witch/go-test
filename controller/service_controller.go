@@ -116,8 +116,9 @@ func UserBlockAccess(ctx *gin.Context) {
 }
 
 type ReqBody_ObjMessage struct {
-	ObjMessage string
-	ObjId      int
+	ObjMessage   string
+	ObjId        int
+	UserNickname string
 }
 
 // WriteObjMessage                  godoc
@@ -134,20 +135,27 @@ func WriteObjMessage(ctx *gin.Context) {
 	// body에 담아서 토큰 담아오기
 	var reqBody ReqBody_ObjMessage
 	user_uid := ctx.MustGet("user_uid").(string)
+	fmt.Println(1)
 	if err := ctx.ShouldBind(&reqBody); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": err,
-		})
+		ctx.JSON(http.StatusInternalServerError, nil)
 		// log.Fatal(err)
 		fmt.Println(err)
 		return
 	}
 
+	fmt.Println(reqBody)
+	fmt.Println(2)
 	uid, _ := strconv.Atoi(user_uid)
+	result_user, err := model.UserSchema.FindUserByUid(configs.DB, user_uid)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, nil)
+		return
+	}
+
+	uid = result_user.Id
 	oid := strconv.Itoa(reqBody.ObjId)
 	message := reqBody.ObjMessage
-
-	fmt.Println("1", oid)
+	fmt.Println("3", oid)
 	// obj 주인과 obj 작성 타입 확인
 	obj, err := model.ObjSchema.GetObjByObjId(configs.DB, oid)
 	if err != nil {
@@ -192,7 +200,7 @@ func WriteObjMessage(ctx *gin.Context) {
 
 		// 성공
 		fmt.Println("4")
-		msg, err := model.Obj_msgSchema.CreateObjMsg(configs.DB, message, oid, uid)
+		msg, err := model.Obj_msgSchema.CreateObjMsg(configs.DB, message, oid, reqBody.UserNickname, uid)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": err,
@@ -230,7 +238,7 @@ func WriteObjMessage(ctx *gin.Context) {
 
 		fmt.Println("6")
 		// 성공
-		msg, err := model.Obj_msgSchema.CreateObjMsg(configs.DB, message, oid, uid)
+		msg, err := model.Obj_msgSchema.CreateObjMsg(configs.DB, message, oid, reqBody.UserNickname, uid)
 		ctx.JSON(http.StatusOK, gin.H{
 			"payload": msg,
 		})
@@ -240,6 +248,32 @@ func WriteObjMessage(ctx *gin.Context) {
 	fmt.Println("7")
 	ctx.JSON(http.StatusInternalServerError, nil)
 	return
+}
+
+// Obj messages 페이징 조회            godoc
+// @Summary      					Obj messages 페이징 조회
+// @Description  					Obj messages 페이징 조회
+// @Tags        					Main
+// @Param        					page  	path    string  true  "페이지입력"
+// @Param        					limit  	path    string  true  "조회갯수제한"
+// @Produce      					json
+// @Success      					200  {array}  model.Obj_msg
+// @Router       					/api/obj/msg/paging/{page}/{limit} [get]
+func ReadObjMessages(ctx *gin.Context) {
+	page := ctx.Param("page")
+	limit := ctx.Param("limit")
+
+	resultObjs, err := model.Obj_msgSchema.GetObjMsgs(configs.DB, page, limit)
+	if err != nil {
+		ctx.JSON(http.StatusNoContent, gin.H{
+			"payload": resultObjs,
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"payload": resultObjs,
+	})
 }
 
 type ReqBody_ObjDel struct {
@@ -260,36 +294,38 @@ type ReqBody_ObjDel struct {
 func DeleteObjMsg(ctx *gin.Context) {
 	// body에 담아서 토큰 담아오기
 	var reqBody ReqBody_ObjDel
-	user_uid := ctx.MustGet("user_uid").(string)
 	if err := ctx.ShouldBind(&reqBody); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": err,
-		})
+		ctx.JSON(http.StatusInternalServerError, nil)
 		// log.Fatal(err)
 		fmt.Println(err)
 		return
 	}
 
-	uid, _ := strconv.Atoi(user_uid)
-	oid := strconv.Itoa(reqBody.ObjMsgId)
+	user_uid := ctx.MustGet("user_uid").(string)
+	user_uid_toInt, _ := strconv.Atoi(user_uid)
+	result_user, err := model.UserSchema.GetUserByUid(configs.DB, user_uid_toInt)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, nil)
+		return
+	}
+
+	uid := result_user.Id
+	oid := strconv.Itoa(reqBody.ObjId)
 	omid := strconv.Itoa(reqBody.ObjMsgId)
 	fmt.Println("1")
 
 	// obj 주인과 obj 작성 타입 확인
 	obj, err := model.ObjSchema.GetObjByObjId(configs.DB, oid)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": err,
-		})
+		ctx.JSON(http.StatusInternalServerError, nil)
+		fmt.Println(err)
 		return
 	}
 
 	fmt.Println("2")
 	obj_msg, err := model.Obj_msgSchema.GetObjMsgByObjId(configs.DB, oid)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": err,
-		})
+		ctx.JSON(http.StatusInternalServerError, nil)
 		return
 	}
 	if !obj_msg.IsActive {
@@ -312,9 +348,7 @@ func DeleteObjMsg(ctx *gin.Context) {
 		// del
 		obj_msg, err := model.Obj_msgSchema.UpdateObjMsgIsActive(configs.DB, omid)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"error": err,
-			})
+			ctx.JSON(http.StatusInternalServerError, nil)
 			return
 		}
 
@@ -334,9 +368,7 @@ func DeleteObjMsg(ctx *gin.Context) {
 		fmt.Println("6")
 		obj_msg, err = model.Obj_msgSchema.UpdateObjMsgIsActive(configs.DB, omid)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"error": err,
-			})
+			ctx.JSON(http.StatusInternalServerError, nil)
 			return
 		}
 

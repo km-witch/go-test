@@ -26,6 +26,8 @@ definitions:
         type: integer
       objMessage:
         type: string
+      userNickname:
+        type: string
     type: object
   controller.ReqBody_Token:
     properties:
@@ -181,11 +183,14 @@ definitions:
         type: string
       updated_user:
         type: integer
+      user_nickname:
+        type: string
     required:
     - created_user
     - message
     - obj_id
     - updated_user
+    - user_nickname
     type: object
   model.ProductGroup:
     properties:
@@ -486,7 +491,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Obj_msg'
+            items:
+              $ref: '#/definitions/model.Obj_msg'
+            type: array
       summary: Obj messages 페이징 조회
       tags:
       - Main

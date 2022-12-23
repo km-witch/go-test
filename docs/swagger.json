@@ -372,7 +372,10 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Obj_msg"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Obj_msg"
+                            }
                         }
                     }
                 }
@@ -522,6 +525,9 @@
                     "type": "integer"
                 },
                 "objMessage": {
+                    "type": "string"
+                },
+                "userNickname": {
                     "type": "string"
                 }
             }
@@ -732,7 +738,8 @@
                 "created_user",
                 "message",
                 "obj_id",
-                "updated_user"
+                "updated_user",
+                "user_nickname"
             ],
             "properties": {
                 "created_at": {
@@ -759,6 +766,9 @@
                 },
                 "updated_user": {
                     "type": "integer"
+                },
+                "user_nickname": {
+                    "type": "string"
                 }
             }
         },
