@@ -270,20 +270,22 @@ type Response_ReadObjMessages struct {
 	Payload []model.Obj_msg
 }
 
-// Obj messages 페이징 조회            godoc
+// Obj messages 페이징 조회          godoc
 // @Summary      					Obj messages 페이징 조회
 // @Description  					Obj messages 페이징 조회
 // @Tags        					Main
-// @Param        					page  	path    string  true  "페이지입력"
-// @Param        					limit  	path    string  true  "조회갯수제한"
+// @Param        					objectId  	path    string  true  "오브젝트 ID"
+// @Param        					page  		path    string  true  "페이지입력"
+// @Param        					limit  		path    string  true  "조회갯수제한"
 // @Produce      					json
 // @Success      					200  {object}  Response_ReadObjMessages
-// @Router       					/api/obj/msg/paging/{page}/{limit} [get]
+// @Router       					/api/obj/msg/paging/{objectId}/{page}/{limit} [get]
 func ReadObjMessages(ctx *gin.Context) {
+	objectId := ctx.Param("objectId")
 	page := ctx.Param("page")
 	limit := ctx.Param("limit")
 
-	resultObjs, err := model.Obj_msgSchema.GetObjMsgs(configs.DB, page, limit)
+	resultObjs, err := model.Obj_msgSchema.GetObjMsgs(configs.DB, page, limit, objectId)
 	if err != nil {
 		ctx.JSON(http.StatusNoContent, gin.H{
 			"payload": resultObjs,
