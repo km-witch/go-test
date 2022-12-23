@@ -206,12 +206,12 @@ func (o *Obj) CreateObj(db *gorm.DB, objForm Obj) (Obj, error) {
 }
 
 // Obj Msg 조회 Paging
-func (om *Obj_msg) GetObjMsgs(db *gorm.DB, page, limit, objectId string) ([]Obj_msg, error) {
+func (om *Obj_msg) GetObjMsgs(db *gorm.DB, page, limit, objid string) ([]Obj_msg, error) {
 	var result []Obj_msg
 	page_num, _ := strconv.Atoi(page)
 	limit_num, _ := strconv.Atoi(limit)
 	offset := (page_num - 1) * limit_num
-	db.Limit(limit_num).Offset(offset).Order("created_at ASC").Where("obj_id="+objectId, "is_active=1").Find(&result)
+	db.Limit(limit_num).Offset(offset).Order("id DESC").Where("is_active=1 AND obj_id=?", objid).Find(&result)
 
 	if result == nil {
 		return nil, errors.New("No ObjMsgs")

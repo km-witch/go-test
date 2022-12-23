@@ -255,6 +255,11 @@ definitions:
       contract:
         type: string
       created_time:
+        description: |-
+          Snap           string    `gorm:"column:snap" json:"snap"`
+          Metadata       string    `gorm:"column:metadata" json:"metadata"`
+          Message_role   string    `gorm:"column:message_role" json:"message_role"` // MSG Role을 여기서 주어야 하는가..에 대한 의문.
+          Message_amount int       `gorm:"column:message_amount" json:"message_amount"`
         type: string
       description:
         type: string
@@ -262,20 +267,11 @@ definitions:
         type: integer
       image_url:
         type: string
-      message_amount:
-        type: integer
-      message_role:
-        description: MSG Role을 여기서 주어야 하는가..에 대한 의문.
-        type: string
-      metadata:
-        type: string
       name_en:
         type: string
       name_ko:
         type: string
       properties:
-        type: string
-      snap:
         type: string
       thumbnail_url:
         type: string
@@ -525,7 +521,7 @@ paths:
       summary: Obj msg 삭제
       tags:
       - Main
-  /api/obj/msg/paging/{page}/{limit}:
+  /api/obj/msg/paging/{page}/{limit}/{objid}:
     get:
       description: Obj messages 페이징 조회
       parameters:
@@ -537,6 +533,11 @@ paths:
       - description: 조회갯수제한
         in: path
         name: limit
+        required: true
+        type: string
+      - description: 오브제 ID 값
+        in: path
+        name: objid
         required: true
         type: string
       produces:

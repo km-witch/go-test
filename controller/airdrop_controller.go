@@ -45,8 +45,10 @@ func Airdrop_Item(ctx *gin.Context) {
 
 	user_result, err := model.UserSchema.FindUserByUid(configs.DB, user_uid)
 	if err != nil {
-		ctx.JSON(http.StatusNoContent, nil)
-		log.Println("UID 확인 실패")
+		log.Panicln("UID 확인 실패 : ", err)
+		ctx.JSON(http.StatusNoContent, gin.H{
+			"error": "UID 확인 실패",
+		})
 		return
 	}
 	userId_int := user_result.Id
@@ -62,8 +64,10 @@ func Airdrop_Item(ctx *gin.Context) {
 
 	// ## 바디 파싱
 	if err := ctx.ShouldBind(&reqBody); err != nil {
-		ctx.JSON(http.StatusInternalServerError, nil)
-		log.Println("바디 파싱 실패")
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "바디 파싱 실패",
+		})
+		log.Println("바디 파싱 실패 : ", err)
 		return
 	}
 	log.Println("🦾 Request Body Parsing Successed")
@@ -72,9 +76,10 @@ func Airdrop_Item(ctx *gin.Context) {
 	// 트리 1개, 방명록 1개 에어드랍가능. ✅
 	logLen := model.SalesLogSchema.GetSalesLog(configs.DB, reqBody.Sales_id, userId_string)
 	if logLen >= 1 {
-		log.Println("Len Log", logLen)
-		ctx.JSON(http.StatusBadRequest, nil)
-		log.Println("이미받음")
+		log.Println("이미 받음 : ", logLen)
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": "이미 받음",
+		})
 		return
 	}
 
@@ -85,8 +90,10 @@ func Airdrop_Item(ctx *gin.Context) {
 		// 월렛이 없는 유저라면 월렛생성
 		w, err := model.WalletSchema.CreateWallet(configs.DB, userId_int)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, nil)
-			log.Println("월렛 조회 실패")
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"error": "월렛 조회 실패",
+			})
+			log.Println("월렛 조회 실패 : ", err)
 			return
 		}
 		wallet_id = w.Id
@@ -98,8 +105,10 @@ func Airdrop_Item(ctx *gin.Context) {
 	saleid_to_numb, _ := strconv.Atoi(reqBody.Sales_id)
 	result, err := model.NftSchema.CreateNftByGroupId(configs.DB, productid_to_string, wallet_id)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, nil)
-		log.Println("세일 확인 및 NFT 생성 실패")
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "세일 확인 및 NFT 생성 실패",
+		})
+		log.Println("세일 확인 및 NFT 생성 실패 : ", err)
 		return
 	}
 
@@ -112,8 +121,10 @@ func Airdrop_Item(ctx *gin.Context) {
 	TxForm.Nftid = result.Id
 	_, err = model.NftTxSchema.CreateTx(configs.DB, TxForm)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, nil)
-		log.Println("NFT 트랜잭션 생성 실패")
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "NFT 트랜잭션 생성 실패",
+		})
+		log.Println("NFT 트랜잭션 생성 실패 : ", err)
 		return
 	}
 
@@ -122,8 +133,10 @@ func Airdrop_Item(ctx *gin.Context) {
 	// 세일 ID를 통해 세일 조회
 	salesResult, err := model.SalesSchema.GetSalesById(configs.DB, reqBody.Sales_id)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, nil)
-		log.Println("세일조회실패")
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "세일조회실패",
+		})
+		log.Println("세일조회실패 : ", err)
 		return
 	}
 
@@ -141,8 +154,10 @@ func Airdrop_Item(ctx *gin.Context) {
 	// 블록조회
 	result_block, err := model.BlockSchema.GetBlock_ByUserId(configs.DB, userId_string)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, nil)
-		log.Println("블록 조회 실패")
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "블록 조회 실패",
+		})
+		log.Println("블록 조회 실패 : ", err)
 		return
 	}
 
@@ -158,8 +173,10 @@ func Airdrop_Item(ctx *gin.Context) {
 	objForm.MsgRole = reqBody.MsgRole // 3=OWNER || 6=Guest || 9=ALL // 트리는 =6 || 카드=3
 	realObj, err := model.ObjSchema.CreateObj(configs.DB, objForm)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, nil)
-		log.Println("오브제 생성 실패")
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "오브제 생성 실패",
+		})
+		log.Println("오브제 생성 실패 : ", err)
 		return
 	}
 
@@ -191,7 +208,10 @@ func GetObjsByUserId(ctx *gin.Context) {
 
 	objs_result, err := model.ObjSchema.GetObjsByUserId(configs.DB, userId_int)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, nil)
+		log.Panicln("Obj 조회 실패 : ", err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Obj 조회 실패",
+		})
 	}
 	ctx.JSON(http.StatusOK, gin.H{
 		"payload": objs_result,
@@ -210,7 +230,10 @@ func GetObjsByBlockId(ctx *gin.Context) {
 	blockId := ctx.Param("blockid")
 	objs_result, err := model.ObjSchema.GetObjsByBlockId(configs.DB, blockId)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, nil)
+		log.Panicln("Objs 조회 실패 : ", err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Objs 조회 실패",
+		})
 	}
 	ctx.JSON(http.StatusOK, gin.H{
 		"payload": objs_result,

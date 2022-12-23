@@ -20,7 +20,7 @@ type Sale struct {
 
 type Saleslog struct {
 	Id           int `gorm:"id;primaryKey;autoIncrement" json:"id"`
-	Type         int `gorm:"column:type" json:"type" binding:"required"`
+	Type         int `gorm:"column:type" json:"type" binding:"required"` // paypal/card/event
 	Sale_id      int `gorm:"column:sale_id" json:"collection_id" binding:"required"`
 	User_id      int `gorm:"column:user_id" json:"user_id" binding:"required"`
 	Nft_id       int `gorm:"column:nft_id" json:"nft_id" binding:"required"`

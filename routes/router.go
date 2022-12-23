@@ -36,7 +36,7 @@ func SetupRouter(r *gin.Engine) {
 		route_obj.POST("/airdrop", AuthCheck(), controller.Airdrop_Item)  // 로그인 필수 (헤더에 토큰 넣어서 보내야함)
 		route_obj.GET("/userid", AuthCheck(), controller.GetObjsByUserId) // 로그인 필수. (헤더에 토큰 넣어서 보내야함)
 		route_obj.GET("/block/:blockid", controller.GetObjsByBlockId)
-		route_obj.GET("/msg/paging/:page/:limit", controller.ReadObjMessages)
+		route_obj.GET("/msg/paging/:page/:limit/:objid", controller.ReadObjMessages)
 		route_obj.GET("/msg/:id", controller.GetObjMsg)
 		route_obj.GET("/msg/count/:obj_id", controller.GetObjMessageCount)
 	}

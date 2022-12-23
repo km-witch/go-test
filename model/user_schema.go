@@ -11,14 +11,16 @@ import (
 )
 
 type User struct {
-	Id             int  `gorm:"id;primaryKey;autoIncrement" json:"id"`
-	Uid            int  `gorm:"column:uid" json:"uid"`
-	IsActive       bool `gorm:"column:is_active" json:"is_active"`
-	EmailConfirmed bool `gorm:"column:email_confirmed" json:"email_confirmed"`
-	Role           int  `gorm:"column:role" json:"role"`
-	Password       int  `gorm:"column:password" json:"password"`
-	AccessId       int  `gorm:"column:access_id" json:"access_id"`
-	BlockId        int  `gorm:"column:block_id" json:"block_id"`
+	Id             int       `gorm:"id;primaryKey;autoIncrement" json:"id"`
+	Uid            int       `gorm:"column:uid" json:"uid"`
+	Email          string    `gorm:"column:email" json:"email"`
+	IsActive       bool      `gorm:"column:is_active" json:"is_active"`
+	EmailConfirmed bool      `gorm:"column:email_confirmed" json:"email_confirmed"`
+	Role           int       `gorm:"column:role" json:"role"`
+	Create_time    time.Time `gorm:"column:cteate_time;autoCreateTime" json:"create_time"`
+	Password       int       `gorm:"column:password" json:"password"`
+	AccessId       int       `gorm:"column:access_id" json:"access_id"`
+	BlockId        int       `gorm:"column:block_id" json:"block_id"`
 }
 
 type AccessLog struct {
@@ -31,10 +33,10 @@ type AccessLog struct {
 type Profile struct {
 	Id         int       `gorm:"id;primaryKey;autoIncrement" json:"id"`
 	UserId     int       `gorm:"column:user_id" json:"user_id"`
-	NickName   bool      `gorm:"column:nickname" json:"nickname"`
+	NickName   bool      `gorm:"column:nickname" json:"nickname"` //string
 	Language   string    `gorm:"column:language" json:"language"`
 	PfpNftId   int       `gorm:"column:pfp_nft_id" json:"pfp_nft_id"`
-	Avatar     int       `gorm:"column:avatar" json:"avatar"`
+	Avatar     int       `gorm:"column:avatar" json:"avatar"` //string
 	DefaultImg int       `gorm:"column:default_img_url" json:"default_img_url"`
 	Created_at time.Time `gorm:"autoCreateTime"`
 	Updated_at time.Time `gorm:"autoUpdateTime:milli"`

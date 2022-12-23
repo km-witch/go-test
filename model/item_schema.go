@@ -24,22 +24,22 @@ type Collection struct {
 }
 
 type ProductGroup struct {
-	Id             int       `gorm:"id;primaryKey;autoIncrement" json:"id"`
-	Collection_id  int       `gorm:"column:collection_id" json:"collection_id" binding:"required"`
-	Thumbnail_url  string    `gorm:"column:thumbnail_url" json:"thumbnail_url"`
-	Contract       string    `gorm:"column:contract" json:"contract" binding:"required"`
-	Name_ko        string    `gorm:"column:name_ko" json:"name_ko"`
-	Name_en        string    `gorm:"column:name_en" json:"name_en"`
-	Description    string    `gorm:"column:description" json:"description"`
-	Amount         int       `gorm:"column:amount" json:"amount"`
-	Properties     string    `gorm:"column:properties" json:"properties"`
-	Image_Url      string    `gorm:"column:image_url" json:"image_url"`
-	Snap           string    `gorm:"column:snap" json:"snap"`
-	Metadata       string    `gorm:"column:metadata" json:"metadata"`
-	Message_role   string    `gorm:"column:message_role" json:"message_role"` // MSG Role을 여기서 주어야 하는가..에 대한 의문.
-	Message_amount int       `gorm:"column:message_amount" json:"message_amount"`
-	Created_time   time.Time `gorm:"autoCreateTime" json:"created_time"`
-	Updated_time   time.Time `gorm:"autoUpdateTime" json:"updated_time"`
+	Id            int    `gorm:"id;primaryKey;autoIncrement" json:"id"`
+	Collection_id int    `gorm:"column:collection_id" json:"collection_id" binding:"required"`
+	Thumbnail_url string `gorm:"column:thumbnail_url" json:"thumbnail_url"`
+	Contract      string `gorm:"column:contract" json:"contract" binding:"required"`
+	Name_ko       string `gorm:"column:name_ko" json:"name_ko"`
+	Name_en       string `gorm:"column:name_en" json:"name_en"`
+	Description   string `gorm:"column:description" json:"description"`
+	Amount        int    `gorm:"column:amount" json:"amount"`
+	Properties    string `gorm:"column:properties" json:"properties"`
+	Image_Url     string `gorm:"column:image_url" json:"image_url"`
+	// Snap           string    `gorm:"column:snap" json:"snap"`
+	// Metadata       string    `gorm:"column:metadata" json:"metadata"`
+	// Message_role   string    `gorm:"column:message_role" json:"message_role"` // MSG Role을 여기서 주어야 하는가..에 대한 의문.
+	// Message_amount int       `gorm:"column:message_amount" json:"message_amount"`
+	Created_time time.Time `gorm:"autoCreateTime" json:"created_time"`
+	Updated_time time.Time `gorm:"autoUpdateTime" json:"updated_time"`
 }
 
 // FK 적용방식 구성하시오.

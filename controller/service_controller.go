@@ -30,20 +30,15 @@ type Resp_FindUserBlockData struct {
 // @Success      					200  {object}  Resp_FindUserBlockData
 // @Router       					/api/user/ [post]
 func UserBlockAccess(ctx *gin.Context) {
-	// body에 담아서 토큰 담아오기
 	log.Println("UserBlockAccess")
 	var reqBody ReqBody_Token
 	user_uid := ctx.MustGet("user_uid").(string)
-	log.Println("1")
 	if err := ctx.ShouldBind(&reqBody); err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
 		log.Println("Bind ERR:", err)
-		// log.Fatal(err)
-		log.Println(err)
 		return
 	}
 
-	log.Println("2")
 	uid, _ := strconv.Atoi(user_uid)
 
 	// 유저 table에 존재하나 확인 없으면 생성
@@ -52,7 +47,10 @@ func UserBlockAccess(ctx *gin.Context) {
 		user, err = model.UserSchema.CreateUserByUid(configs.DB, uid)
 
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, nil)
+			log.Panicln("User data Create 실패 : ", err)
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"error": "User data Create 실패",
+			})
 			return
 		}
 	}
@@ -67,6 +65,7 @@ func UserBlockAccess(ctx *gin.Context) {
 		_, wcrr := model.WalletSchema.CreateWallet(configs.DB, user.Id)
 
 		if wcrr != nil {
+			log.Panicln("wallet data 생성 실패 : ", wcrr)
 			ctx.JSON(http.StatusInternalServerError, nil)
 			return
 		}
@@ -78,7 +77,10 @@ func UserBlockAccess(ctx *gin.Context) {
 		_, perr := model.ProfileSchema.CreateProfile(configs.DB, user.Id)
 
 		if perr != nil {
-			ctx.JSON(http.StatusInternalServerError, nil)
+			log.Panicln("프로필 생성 실패 : ", perr)
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"error": "프로필 생성 실패",
+			})
 			return
 		}
 	}
@@ -92,7 +94,10 @@ func UserBlockAccess(ctx *gin.Context) {
 		block.Name = reqBody.NickName
 		block, berr = model.BlockSchema.CreateBlock(configs.DB, block)
 		if berr != nil {
-			ctx.JSON(http.StatusInternalServerError, nil)
+			log.Panicln("block data 생성 실패 : ", berr)
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"error": "block data 생성 실패",
+			})
 			return
 		}
 	}
@@ -104,15 +109,17 @@ func UserBlockAccess(ctx *gin.Context) {
 	log.Println("7")
 	_, aerr := model.AccessLogSchema.BlockAccess(configs.DB, user.Id, block.Id)
 	if aerr != nil {
-		ctx.JSON(http.StatusInternalServerError, nil)
+		log.Panicln("block access data 최신화 실패 : ", aerr)
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "block access data 최신화 실패",
+		})
 		return
 	}
-	// return
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"blockdata": block,
 		"objs":      objs,
 	})
-	return
 }
 
 type ReqBody_ObjMessage struct {
@@ -263,32 +270,32 @@ func WriteObjMessage(ctx *gin.Context) {
 
 	log.Println("7")
 	ctx.JSON(http.StatusInternalServerError, nil)
-	return
 }
 
 type Response_ReadObjMessages struct {
 	Payload []model.Obj_msg
 }
 
-// Obj messages 페이징 조회          godoc
+// Obj messages 페이징 조회            godoc
 // @Summary      					Obj messages 페이징 조회
 // @Description  					Obj messages 페이징 조회
 // @Tags        					Main
-// @Param        					objectId  	path    string  true  "오브젝트 ID"
-// @Param        					page  		path    string  true  "페이지입력"
-// @Param        					limit  		path    string  true  "조회갯수제한"
+// @Param        					page  	path    string  true  "페이지입력"
+// @Param        					limit  	path    string  true  "조회갯수제한"
+// @Param        					objid  	path    string  true  "오브제 ID 값"
 // @Produce      					json
 // @Success      					200  {object}  Response_ReadObjMessages
-// @Router       					/api/obj/msg/paging/{objectId}/{page}/{limit} [get]
+// @Router       					/api/obj/msg/paging/{page}/{limit}/{objid} [get]
 func ReadObjMessages(ctx *gin.Context) {
-	objectId := ctx.Param("objectId")
 	page := ctx.Param("page")
 	limit := ctx.Param("limit")
+	objId := ctx.Param("objid")
 
-	resultObjs, err := model.Obj_msgSchema.GetObjMsgs(configs.DB, page, limit, objectId)
+	resultObjs, err := model.Obj_msgSchema.GetObjMsgs(configs.DB, page, limit, objId)
 	if err != nil {
+		log.Println("obj msgs 읽어오기 실패 : ", err)
 		ctx.JSON(http.StatusNoContent, gin.H{
-			"payload": resultObjs,
+			"error": "obj msgs 읽어오기 실패",
 		})
 		return
 	}
@@ -317,6 +324,7 @@ func DeleteObjMsg(ctx *gin.Context) {
 	// body에 담아서 토큰 담아오기
 	var reqBody ReqBody_ObjDel
 	if err := ctx.ShouldBind(&reqBody); err != nil {
+		log.Println("reqBody 받아오기 실패 : ", err)
 		ctx.JSON(http.StatusInternalServerError, nil)
 		// log.Fatal(err)
 		log.Println(err)
@@ -327,7 +335,10 @@ func DeleteObjMsg(ctx *gin.Context) {
 	user_uid_toInt, _ := strconv.Atoi(user_uid)
 	result_user, err := model.UserSchema.GetUserByUid(configs.DB, user_uid_toInt)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, nil)
+		log.Println("User 정보 읽어오기 실패 : ", err)
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": "User 정보 읽어오기 실패",
+		})
 		return
 	}
 
@@ -339,7 +350,10 @@ func DeleteObjMsg(ctx *gin.Context) {
 	// obj 주인과 obj 작성 타입 확인
 	obj, err := model.ObjSchema.GetObjByObjId(configs.DB, oid)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, nil)
+		log.Println("obj 정보 읽어오기 실패 : ", err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "obj 정보 읽어오기 실패",
+		})
 		log.Println(err)
 		return
 	}
@@ -347,22 +361,34 @@ func DeleteObjMsg(ctx *gin.Context) {
 	log.Println("2")
 	obj_msg, err := model.Obj_msgSchema.GetObjMsgByObjId(configs.DB, oid)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, nil)
+		log.Println("obj msg 정보 읽어오기 실패 : ", err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "obj msg 정보 읽어오기 실패",
+		})
 		return
 	}
 	if !obj_msg.IsActive {
-		ctx.JSON(http.StatusInternalServerError, nil)
+		log.Println("이미 삭제된 상태의 메시지 삭제 시도")
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "이미 삭제된 상태의 메시지 삭제 시도",
+		})
 		return
 	}
 	if obj_msg.ObjId != obj.Id {
-		ctx.JSON(http.StatusInternalServerError, nil)
+		log.Panicln("obj의 ID와 obj_msg의 obj_id가 다른 오류")
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "obj의 ID와 obj_msg의 obj_id가 다른 오류",
+		})
 		return
 	}
 
 	log.Println("3")
 	if obj.MsgRole == 3 { // owner only
 		if obj.User_id != uid {
-			ctx.JSON(http.StatusInternalServerError, nil)
+			log.Println("obj owner만 삭제 가능")
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"error": "obj owner만 삭제 가능",
+			})
 			return
 		}
 
@@ -370,7 +396,10 @@ func DeleteObjMsg(ctx *gin.Context) {
 		// del
 		obj_msg, err := model.Obj_msgSchema.UpdateObjMsgIsActive(configs.DB, omid)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, nil)
+			log.Panicln("delete(is_active column update) 실패")
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"error": "delete(is_active column update) 실패",
+			})
 			return
 		}
 
@@ -383,14 +412,20 @@ func DeleteObjMsg(ctx *gin.Context) {
 	log.Println("5")
 	if obj.MsgRole == 6 { // owner + writer
 		if obj.User_id != uid || obj_msg.Created_user != uid {
-			ctx.JSON(http.StatusInternalServerError, nil)
+			log.Panicln("obj owner 혹은 obj msg 작성자만 삭제 가능")
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"error": "obj owner 혹은 obj msg 작성자만 삭제 가능",
+			})
 			return
 		}
 
 		log.Println("6")
 		obj_msg, err = model.Obj_msgSchema.UpdateObjMsgIsActive(configs.DB, omid)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, nil)
+			log.Panicln("delete(is_active column update) 실패 : ", err)
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"error": "delete(is_active column update) 실패",
+			})
 			return
 		}
 

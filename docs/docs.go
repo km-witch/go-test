@@ -354,7 +354,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/obj/msg/paging/{page}/{limit}": {
+        "/api/obj/msg/paging/{page}/{limit}/{objid}": {
             "get": {
                 "description": "Obj messages 페이징 조회",
                 "produces": [
@@ -376,6 +376,13 @@ const docTemplate = `{
                         "type": "string",
                         "description": "조회갯수제한",
                         "name": "limit",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "오브제 ID 값",
+                        "name": "objid",
                         "in": "path",
                         "required": true
                     }
@@ -882,6 +889,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "created_time": {
+                    "description": "Snap           string    ` + "`" + `gorm:\"column:snap\" json:\"snap\"` + "`" + `\nMetadata       string    ` + "`" + `gorm:\"column:metadata\" json:\"metadata\"` + "`" + `\nMessage_role   string    ` + "`" + `gorm:\"column:message_role\" json:\"message_role\"` + "`" + ` // MSG Role을 여기서 주어야 하는가..에 대한 의문.\nMessage_amount int       ` + "`" + `gorm:\"column:message_amount\" json:\"message_amount\"` + "`" + `",
                     "type": "string"
                 },
                 "description": {
@@ -893,16 +901,6 @@ const docTemplate = `{
                 "image_url": {
                     "type": "string"
                 },
-                "message_amount": {
-                    "type": "integer"
-                },
-                "message_role": {
-                    "description": "MSG Role을 여기서 주어야 하는가..에 대한 의문.",
-                    "type": "string"
-                },
-                "metadata": {
-                    "type": "string"
-                },
                 "name_en": {
                     "type": "string"
                 },
@@ -910,9 +908,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "properties": {
-                    "type": "string"
-                },
-                "snap": {
                     "type": "string"
                 },
                 "thumbnail_url": {
