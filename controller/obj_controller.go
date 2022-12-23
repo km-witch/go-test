@@ -9,13 +9,13 @@ import (
 )
 
 type Resp_GetMessageCount struct {
-	Payload int `json:"payload" example:"24"`
+	Payload int `json:"payload" example:"2"`
 }
 
 // GetObjMessageCount     	godoc
 // @Summary         		Obj Message 갯수 조회 기능 (트리 크기 조정용)
 // @Description     		Obj Message 갯수 조회 기능 (트리 크기 조정용)
-// @Tags            		Ready
+// @Tags            		Main
 // @Param           		obj_id path int true "Object id"
 // @Produce         		json
 // @Success         		200 {object} Resp_GetMessageCount

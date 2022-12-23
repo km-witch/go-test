@@ -19,7 +19,7 @@ func SetupRouter(r *gin.Engine) {
 	// Swagger 라우팅
 	r.GET("/docs/:any", ginSwg.WrapHandler(swgFiles.Handler))
 	docs.SwaggerInfo.Host = "dev-go.witchworld.io"
-	//docs.SwaggerInfo.Host = "localhost:8080"
+	// docs.SwaggerInfo.Host = "localhost:8080"
 
 	// For Health Check
 	r.GET("/health", func(ctx *gin.Context) {

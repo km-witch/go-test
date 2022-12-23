@@ -60,7 +60,7 @@ definitions:
   controller.Resp_GetMessageCount:
     properties:
       payload:
-        example: 24
+        example: 2
         type: integer
     type: object
   controller.Resp_GetObjsByUserId:
@@ -497,7 +497,7 @@ paths:
           description: Bad Request
       summary: Obj Message 갯수 조회 기능 (트리 크기 조정용)
       tags:
-      - Ready
+      - Main
   /api/obj/msg/del:
     post:
       description: Obj msg의 is_active 값을 변경해 삭제처리 한다

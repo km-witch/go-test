@@ -286,7 +286,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Ready"
+                    "Main"
                 ],
                 "summary": "Obj Message 갯수 조회 기능 (트리 크기 조정용)",
                 "parameters": [
@@ -593,7 +593,7 @@ const docTemplate = `{
             "properties": {
                 "payload": {
                     "type": "integer",
-                    "example": 24
+                    "example": 2
                 }
             }
         },
