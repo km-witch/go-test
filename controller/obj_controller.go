@@ -23,7 +23,7 @@ type Resp_GetMessageCount struct {
 // @Router          		/api/obj/msg/count/{obj_id} [get]
 func GetObjMessageCount(ctx *gin.Context) {
 	obj_id := ctx.Param("obj_id")
-	objAmount, err := model.Obj_msgSchema.GetObjMsgCount(configs.DB, obj_id)
+	objAmount, err := model.Obj_msgSchema.GetObjActiveMsgCount(configs.DB, obj_id)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
 	}
