@@ -21,6 +21,11 @@ func SetupRouter(r *gin.Engine) {
 	docs.SwaggerInfo.Host = "dev-go.witchworld.io"
 	//docs.SwaggerInfo.Host = "localhost:8080"
 
+	// For Health Check
+	r.GET("/health", func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, nil)
+	})
+
 	route_block := r.Group("/api/block", AuthCheck())
 	{
 		route_block.GET("/get/:userid", controller.GetBlock_ByUserId) // 유저 블록 확인 &&생성
