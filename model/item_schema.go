@@ -3,6 +3,7 @@ package model
 import (
 	"errors"
 	"fmt"
+	"log"
 	"strconv"
 	"time"
 
@@ -112,7 +113,7 @@ func (n *Nft) CreateNftByGroupId(db *gorm.DB, groupid string, walletId int) (Nft
 	var CurrentNft Nft
 	var NftForm Nft
 	db.Where("product_id=?", groupid).Last(&CurrentNft)
-	fmt.Println(CurrentNft)
+	log.Println(CurrentNft)
 
 	// Req Form 생성
 	groupid_numb, _ := strconv.Atoi(groupid)
@@ -141,7 +142,7 @@ func (n *Nft) CreateNftByGroupId(db *gorm.DB, groupid string, walletId int) (Nft
 func (tx *NftTx) CreateTx(db *gorm.DB, txInfo NftTx) (NftTx, error) {
 	var transaction NftTx
 	transaction = txInfo
-	fmt.Println(transaction)
+	log.Println(transaction)
 	db.Create(&transaction)
 	return transaction, nil
 }

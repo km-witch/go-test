@@ -2,7 +2,7 @@ package model
 
 import (
 	"errors"
-	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -192,7 +192,7 @@ func (o *Obj) GetObjsByUserIdWithProductId(db *gorm.DB, userId string) ([]Obj_wi
 	var result []Obj_with_productid
 	// db.Model(Obj{}).Where("user_id=?", userId).Find(&result)
 	db.Raw("SELECT objs.*, nfts.product_id FROM objs INNER JOIN nfts ON nfts.id = objs.nft_id WHERE objs.user_id=?", userId).Find(&result)
-	fmt.Println(result)
+	log.Println(result)
 	return result, nil
 }
 

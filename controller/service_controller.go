@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"pkg/configs"
 	"pkg/model"
@@ -31,19 +31,19 @@ type Resp_FindUserBlockData struct {
 // @Router       					/api/user/ [post]
 func UserBlockAccess(ctx *gin.Context) {
 	// body에 담아서 토큰 담아오기
-	fmt.Println("UserBlockAccess")
+	log.Println("UserBlockAccess")
 	var reqBody ReqBody_Token
 	user_uid := ctx.MustGet("user_uid").(string)
-	fmt.Println("1")
+	log.Println("1")
 	if err := ctx.ShouldBind(&reqBody); err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
-		fmt.Println("Bind ERR:", err)
+		log.Println("Bind ERR:", err)
 		// log.Fatal(err)
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 
-	fmt.Println("2")
+	log.Println("2")
 	uid, _ := strconv.Atoi(user_uid)
 
 	// 유저 table에 존재하나 확인 없으면 생성
@@ -58,7 +58,7 @@ func UserBlockAccess(ctx *gin.Context) {
 	}
 	uid = user.Uid
 	user_id_string := strconv.Itoa(user.Id)
-	fmt.Println("3")
+	log.Println("3")
 
 	// 지갑 존재 하나 확인 없으면 생성
 	_, werr := model.WalletSchema.GetWalletByUserId(configs.DB, user_id_string)
@@ -71,7 +71,7 @@ func UserBlockAccess(ctx *gin.Context) {
 			return
 		}
 	}
-	fmt.Println("4")
+	log.Println("4")
 	// profile table 존재하나 확인 없으면 생성
 	_, perr := model.ProfileSchema.GetProfileByUserId(configs.DB, user.Id)
 	if perr != nil {
@@ -82,10 +82,10 @@ func UserBlockAccess(ctx *gin.Context) {
 			return
 		}
 	}
-	fmt.Println("5")
+	log.Println("5")
 	// block 존재하나 확인 없으면 생성 -> user 정보에 block id추가
 	block, berr := model.BlockSchema.GetBlock_ByUserId(configs.DB, user_id_string)
-	fmt.Println(user_uid, block.Id)
+	log.Println(user_uid, block.Id)
 	if berr != nil {
 		block.User_id = user.Id
 		block.Thema = "Empty"
@@ -96,12 +96,12 @@ func UserBlockAccess(ctx *gin.Context) {
 			return
 		}
 	}
-	fmt.Println("6")
+	log.Println("6")
 	// block의 obj 정보 return
 	objs, _ := model.ObjSchema.GetObjsByUserIdWithProductId(configs.DB, user_id_string)
 
 	// block access log 생성(최신화) 후 값 저장 -> access id
-	fmt.Println("7")
+	log.Println("7")
 	_, aerr := model.AccessLogSchema.BlockAccess(configs.DB, user.Id, block.Id)
 	if aerr != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
@@ -135,16 +135,16 @@ func WriteObjMessage(ctx *gin.Context) {
 	// body에 담아서 토큰 담아오기
 	var reqBody ReqBody_ObjMessage
 	user_uid := ctx.MustGet("user_uid").(string)
-	fmt.Println(1)
+	log.Println(1)
 	if err := ctx.ShouldBind(&reqBody); err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
 		// log.Fatal(err)
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 
-	fmt.Println(reqBody)
-	fmt.Println(2)
+	log.Println(reqBody)
+	log.Println(2)
 	uid, _ := strconv.Atoi(user_uid)
 	result_user, err := model.UserSchema.FindUserByUid(configs.DB, user_uid)
 	if err != nil {
@@ -155,7 +155,7 @@ func WriteObjMessage(ctx *gin.Context) {
 	uid = result_user.Id
 	oid := strconv.Itoa(reqBody.ObjId)
 	message := reqBody.ObjMessage
-	fmt.Println("3", oid)
+	log.Println("3", oid)
 	// obj 주인과 obj 작성 타입 확인
 	obj, err := model.ObjSchema.GetObjByObjId(configs.DB, oid)
 	if err != nil {
@@ -172,7 +172,7 @@ func WriteObjMessage(ctx *gin.Context) {
 			return
 		}
 
-		fmt.Println("2")
+		log.Println("2")
 		// 이미 작성했나 확인
 		// GetAllObjMsgCountByUser -> is_active false 된 메시지까지 체크라 all obj msg
 		amount, err := model.Obj_msgSchema.GetAllObjMsgCountByUser(configs.DB, uid, oid)
@@ -183,7 +183,7 @@ func WriteObjMessage(ctx *gin.Context) {
 			return
 		}
 		if amount > 0 {
-			fmt.Println("3")
+			log.Println("3")
 			// update
 			msg, err := model.Obj_msgSchema.UpdateObjMsg(configs.DB, message, oid, uid)
 			if err != nil {
@@ -199,7 +199,7 @@ func WriteObjMessage(ctx *gin.Context) {
 		}
 
 		// 성공
-		fmt.Println("4")
+		log.Println("4")
 		msg, err := model.Obj_msgSchema.CreateObjMsg(configs.DB, message, oid, reqBody.UserNickname, uid)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -221,7 +221,7 @@ func WriteObjMessage(ctx *gin.Context) {
 			})
 			return
 		}
-		fmt.Println("5")
+		log.Println("5")
 
 		// 작성 개수 확인 3개 미만일것
 		amount, err := model.Obj_msgSchema.GetObjMsgCountByUser(configs.DB, uid, oid)
@@ -236,7 +236,7 @@ func WriteObjMessage(ctx *gin.Context) {
 			return
 		}
 
-		fmt.Println("6")
+		log.Println("6")
 		// 성공
 		msg, err := model.Obj_msgSchema.CreateObjMsg(configs.DB, message, oid, reqBody.UserNickname, uid)
 		ctx.JSON(http.StatusOK, gin.H{
@@ -245,7 +245,7 @@ func WriteObjMessage(ctx *gin.Context) {
 		return
 	}
 
-	fmt.Println("7")
+	log.Println("7")
 	ctx.JSON(http.StatusInternalServerError, nil)
 	return
 }
@@ -301,7 +301,7 @@ func DeleteObjMsg(ctx *gin.Context) {
 	if err := ctx.ShouldBind(&reqBody); err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
 		// log.Fatal(err)
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 
@@ -316,17 +316,17 @@ func DeleteObjMsg(ctx *gin.Context) {
 	uid := result_user.Id
 	oid := strconv.Itoa(reqBody.ObjId)
 	omid := strconv.Itoa(reqBody.ObjMsgId)
-	fmt.Println("1")
+	log.Println("1")
 
 	// obj 주인과 obj 작성 타입 확인
 	obj, err := model.ObjSchema.GetObjByObjId(configs.DB, oid)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 
-	fmt.Println("2")
+	log.Println("2")
 	obj_msg, err := model.Obj_msgSchema.GetObjMsgByObjId(configs.DB, oid)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
@@ -341,14 +341,14 @@ func DeleteObjMsg(ctx *gin.Context) {
 		return
 	}
 
-	fmt.Println("3")
+	log.Println("3")
 	if obj.MsgRole == 3 { // owner only
 		if obj.User_id != uid {
 			ctx.JSON(http.StatusInternalServerError, nil)
 			return
 		}
 
-		fmt.Println("4")
+		log.Println("4")
 		// del
 		obj_msg, err := model.Obj_msgSchema.UpdateObjMsgIsActive(configs.DB, omid)
 		if err != nil {
@@ -362,14 +362,14 @@ func DeleteObjMsg(ctx *gin.Context) {
 		return
 	}
 
-	fmt.Println("5")
+	log.Println("5")
 	if obj.MsgRole == 6 { // owner + writer
 		if obj.User_id != uid || obj_msg.Created_user != uid {
 			ctx.JSON(http.StatusInternalServerError, nil)
 			return
 		}
 
-		fmt.Println("6")
+		log.Println("6")
 		obj_msg, err = model.Obj_msgSchema.UpdateObjMsgIsActive(configs.DB, omid)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, nil)
@@ -382,6 +382,6 @@ func DeleteObjMsg(ctx *gin.Context) {
 		return
 	}
 
-	fmt.Println("7")
+	log.Println("7")
 	ctx.JSON(http.StatusInternalServerError, nil)
 }

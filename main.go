@@ -25,6 +25,8 @@ func main() {
 	}
 	defer fpLog.Close()
 
+	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+	log.SetPrefix("[LOG] ")
 	log.SetOutput(io.MultiWriter(fpLog, os.Stdout))
 	log.Println("Log Initialized")
 

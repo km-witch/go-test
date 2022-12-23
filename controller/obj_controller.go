@@ -84,7 +84,7 @@ func GetObjMessageCount(ctx *gin.Context) {
 // 	// 세일로그확인 ✅
 // 	logLen := model.SalesLogSchema.GetSalesLog(configs.ConnectDB(), reqBody.Sales_id, reqBody.User_id)
 // 	if logLen > 0 {
-// 		fmt.Println("Len Log", logLen)
+// 		log.Println("Len Log", logLen)
 // 		ctx.JSON(http.StatusBadRequest, nil)
 // 		return
 // 	}
@@ -117,7 +117,7 @@ func GetObjMessageCount(ctx *gin.Context) {
 // 	TxForm.From = 0
 // 	TxForm.Nftid = result.Id
 // 	TxForm.To = wallet_id
-// 	fmt.Println(4)
+// 	log.Println(4)
 // 	_, err = model.NftTxSchema.CreateTx(configs.ConnectDB(), TxForm)
 // 	if err != nil {
 // 		log.Fatal(err)

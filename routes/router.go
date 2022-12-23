@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"pkg/configs"
 	"pkg/controller"
@@ -100,7 +100,7 @@ func AuthCheck() gin.HandlerFunc {
 			return
 		}
 
-		fmt.Println("User UID : ", claim.UID)
+		log.Println("User UID : ", claim.UID)
 
 		// 만약 위 에러에 걸리지 않으면 토큰인증완료.
 		// UID를 User 테이블에 등록한다. (Claim.UID)

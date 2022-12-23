@@ -122,7 +122,7 @@ type ReqForm_CreateNftByGroupId struct {
 // 		tx, err := model.NftTxSchema.CreateTx(configs.ConnectDB(), TxForm)
 // 		if err != nil {
 // 			// log.Fatal(err)
-// 			fmt.Println(err)
+// 			log.Println(err)
 // 		}
 
 // 		ctx.JSON(http.StatusOK, gin.H{
