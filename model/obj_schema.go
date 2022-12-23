@@ -73,7 +73,7 @@ func (om *Obj_msg) UpdateObjMsg(db *gorm.DB, message, oid string, uid int) (Obj_
 
 func (om *Obj_msg) GetObjMsgCount(db *gorm.DB, objid string) (int, error) {
 	var result Obj
-	err := db.Model(&result).Where("id=?", objid).Find(&result).Error
+	err := db.Model(&result).Where("id=? AND is_active=true", objid).Find(&result).Error
 
 	return result.Amount, err
 }
