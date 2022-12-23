@@ -15,6 +15,8 @@ import (
 )
 
 func SetupRouter(r *gin.Engine) {
+
+	// Swagger 라우팅
 	r.GET("/docs/:any", ginSwg.WrapHandler(swgFiles.Handler))
 	docs.SwaggerInfo.Host = "dev-go.witchworld.io"
 	// docs.SwaggerInfo.Host = "localhost:8080"
@@ -84,14 +86,17 @@ func AuthCheck() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		h := authHeader{}
 		if err := ctx.ShouldBindHeader(&h); err != nil {
-			ctx.JSON(http.StatusBadRequest, nil)
+			//ctx.Error(err)
+			ctx.AbortWithError(http.StatusUnauthorized, err)
+			//ctx.JSON(http.StatusBadRequest, nil)
 			return
 		}
 
 		tokenString := strings.Replace(h.IDToken, "Bearer ", "", 1)
 		claim, err := controller.ValidateJWT(tokenString)
 		if err != nil {
-			ctx.JSON(http.StatusForbidden, nil)
+			//ctx.JSON(http.StatusForbidden, nil)
+			ctx.AbortWithError(http.StatusUnauthorized, err)
 			return
 		}
 
