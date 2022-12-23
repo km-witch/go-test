@@ -159,8 +159,9 @@ func WriteObjMessage(ctx *gin.Context) {
 	// obj 주인과 obj 작성 타입 확인
 	obj, err := model.ObjSchema.GetObjByObjId(configs.DB, oid)
 	if err != nil {
+		log.Println("GetObjByObjId Failed: ", err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": err,
+			"error": "GetObjByObjId Failed",
 		})
 		return
 	}
@@ -168,7 +169,9 @@ func WriteObjMessage(ctx *gin.Context) {
 	// 작성을 owner만 가능한 경우
 	if obj.MsgRole == 3 {
 		if obj.User_id != uid {
-			ctx.JSON(http.StatusInternalServerError, nil)
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"error": "메세지 롤이 다릅니다",
+			})
 			return
 		}
 
@@ -178,7 +181,7 @@ func WriteObjMessage(ctx *gin.Context) {
 		amount, err := model.Obj_msgSchema.GetAllObjMsgCountByUser(configs.DB, uid, oid)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"error": err,
+				"error": "이미 작성됨",
 			})
 			return
 		}
@@ -188,10 +191,12 @@ func WriteObjMessage(ctx *gin.Context) {
 			msg, err := model.Obj_msgSchema.UpdateObjMsg(configs.DB, message, oid, uid)
 			if err != nil {
 				ctx.JSON(http.StatusInternalServerError, gin.H{
-					"error": err,
+					"error": "메세지 업데이트 실패",
 				})
 				return
 			}
+
+			log.Println("업데이트 성공")
 			ctx.JSON(http.StatusOK, gin.H{
 				"payload": msg,
 			})
@@ -203,10 +208,12 @@ func WriteObjMessage(ctx *gin.Context) {
 		msg, err := model.Obj_msgSchema.CreateObjMsg(configs.DB, message, oid, reqBody.UserNickname, uid)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"error": err,
+				"error": "메세지 생성 실패",
 			})
 			return
 		}
+
+		log.Println("신규 작성 성공")
 		ctx.JSON(http.StatusOK, gin.H{
 			"payload": msg,
 		})
