@@ -2,6 +2,7 @@ package model
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -33,6 +34,22 @@ type Obj_msg struct {
 	UserNickname string    `gorm:"column:user_nickname" json:"user_nickname" binding:"required"`
 	Updated_user int       `gorm:"column:updated_user" json:"updated_user" binding:"required"`
 	IsActive     bool      `gorm:"column:is_active" json:"is_active"`
+	Created_at   time.Time `gorm:"autoCreateTime"`
+	Updated_at   time.Time `gorm:"autoUpdateTime:milli"`
+}
+
+type Obj_with_productid struct {
+	Id           int       `gorm:"id;primaryKey;autoIncrement"` // PK
+	User_id      int       `gorm:"column:user_id" json:"user_id" binding:"required"`
+	Nft_id       int       `gorm:"column:nft_id" json:"nft_id"`
+	Product_id   int       `gorm:"column:product_id" json:"product_id"`
+	Building_id  int       `gorm:"column:building_id" json:"building_id"`
+	Block_id     int       `gorm:"column:block_id" json:"block_id" binding:"required"`
+	Pos          string    `gorm:"column:pos" json:"pos" binding:"required"`
+	Rot          string    `gorm:"column:rot" json:"rot" binding:"required"`
+	Updated_user int       `gorm:"column:updated_user" json:"updated_user"`
+	Amount       int       `gorm:"column:amount" json:"amount"`
+	MsgRole      int       `gorm:"column:msg_role" json:"msg_role"`
 	Created_at   time.Time `gorm:"autoCreateTime"`
 	Updated_at   time.Time `gorm:"autoUpdateTime:milli"`
 }
@@ -167,6 +184,15 @@ func (o *Obj) GetObjsByBlockId(db *gorm.DB, block_id string) ([]Obj, error) {
 func (o *Obj) GetObjsByUserId(db *gorm.DB, userId string) ([]Obj, error) {
 	var result []Obj
 	db.Model(&result).Where("user_id=?", userId).Find(&result)
+	return result, nil
+}
+
+// Obj 조회 (Block 조회단체로 API ✅ [Block Key ⇒ 배치된 Obj.model])
+func (o *Obj) GetObjsByUserIdWithProductId(db *gorm.DB, userId string) ([]Obj_with_productid, error) {
+	var result []Obj_with_productid
+	// db.Model(Obj{}).Where("user_id=?", userId).Find(&result)
+	db.Raw("SELECT objs.*, nfts.product_id FROM objs INNER JOIN nfts ON nfts.id = objs.nft_id WHERE objs.user_id=?", userId).Find(&result)
+	fmt.Println(result)
 	return result, nil
 }
 

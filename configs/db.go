@@ -20,7 +20,9 @@ const (
 )
 
 func ConnectDB() *gorm.DB {
-	// DB에 보낼 데이터 전처리
+	// // DB에 보낼 데이터 전처리
+	// GetConfig("./configs/config.toml")
+
 	// DB 연결 진행
 	sqlDB, err_sql := sql.Open(db_type, dsn)
 	if err_sql != nil {

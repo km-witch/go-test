@@ -34,6 +34,11 @@ definitions:
       nickName:
         type: string
     type: object
+  controller.Resp_Airdrop_Item:
+    properties:
+      payload:
+        $ref: '#/definitions/model.Obj'
+    type: object
   controller.Resp_FindUserAndCreateBlock:
     properties:
       block:
@@ -49,7 +54,7 @@ definitions:
         $ref: '#/definitions/model.Block'
       objs:
         items:
-          $ref: '#/definitions/model.Obj'
+          $ref: '#/definitions/model.Obj_with_productid'
         type: array
     type: object
   controller.Resp_GetMessageCount:
@@ -57,6 +62,13 @@ definitions:
       payload:
         example: 24
         type: integer
+    type: object
+  controller.Resp_GetObjsByUserId:
+    properties:
+      payload:
+        items:
+          $ref: '#/definitions/model.Obj'
+        type: array
     type: object
   controller.Response_ReadObjMessages:
     properties:
@@ -198,6 +210,41 @@ definitions:
     - obj_id
     - updated_user
     - user_nickname
+    type: object
+  model.Obj_with_productid:
+    properties:
+      amount:
+        type: integer
+      block_id:
+        type: integer
+      building_id:
+        type: integer
+      created_at:
+        type: string
+      id:
+        description: PK
+        type: integer
+      msg_role:
+        type: integer
+      nft_id:
+        type: integer
+      pos:
+        type: string
+      product_id:
+        type: integer
+      rot:
+        type: string
+      updated_at:
+        type: string
+      updated_user:
+        type: integer
+      user_id:
+        type: integer
+    required:
+    - block_id
+    - pos
+    - rot
+    - user_id
     type: object
   model.ProductGroup:
     properties:
@@ -357,7 +404,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Obj'
+            $ref: '#/definitions/controller.Resp_Airdrop_Item'
       security:
       - Authorization: []
       summary: '#에어드랍진행'
@@ -505,17 +552,19 @@ paths:
   /api/obj/userid:
     get:
       description: '#JWT Token을 헤더에 포함하면 Obj를 조회함'
+      parameters:
+      - description: Bearer
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            items:
-              items:
-                $ref: '#/definitions/model.Obj'
-              type: array
-            type: array
+            $ref: '#/definitions/controller.Resp_GetObjsByUserId'
       security:
       - Authorization: []
       summary: '#JWT Token을 헤더에 포함하면 Obj를 조회함'

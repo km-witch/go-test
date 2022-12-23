@@ -18,6 +18,10 @@ type ReqBody_Airdrop struct {
 	Sales_id string `json:"sale_id"` // 얘로 Tree면 2번을, 카드면 3번을 넣어주세요.
 }
 
+type Resp_Airdrop_Item struct {
+	Payload model.Obj
+}
+
 // #에어드랍		              godoc
 // @Summary      				#에어드랍진행
 // @Description  				#에어드랍진행 (SaleID를 기준으로 트리이거나 또는 카드가 될 수 있음, 1인당 1개씩 수령가능)
@@ -26,7 +30,7 @@ type ReqBody_Airdrop struct {
 // @Param                       Authorization header string true "Bearer"
 // @Param        				ReqBody_Airdrop  	body    ReqBody_Airdrop  true  "Plz Write"
 // @Produce      				json
-// @Success      				200  {object}  model.Obj
+// @Success      				200  {object}  Resp_Airdrop_Item
 // @Router       				/api/obj/airdrop [post]
 func Airdrop_Item(ctx *gin.Context) {
 	var reqBody ReqBody_Airdrop
@@ -164,18 +168,28 @@ func Airdrop_Item(ctx *gin.Context) {
 	})
 }
 
+type Resp_GetObjsByUserId struct {
+	Payload []model.Obj
+}
+
 // #Obj 조회 By UserID		     godoc
 // @Summary      				#JWT Token을 헤더에 포함하면 Obj를 조회함
 // @Description  				#JWT Token을 헤더에 포함하면 Obj를 조회함
 // @Tags        				Main
 // @Security 					Authorization
+// @Param                       Authorization header string true "Bearer"
 // @Produce      				json
-// @Success      				200  {array}  []model.Obj
+// @Success      				200  {object}  Resp_GetObjsByUserId
 // @Router       				/api/obj/userid [get]
 func GetObjsByUserId(ctx *gin.Context) {
 	user_uid := ctx.MustGet("user_uid").(string)
+	user_uid_int, _ := strconv.Atoi(user_uid)
+
 	// Token받아서 아래에 넣어줄 것.
-	objs_result, err := model.ObjSchema.GetObjsByUserId(configs.DB, user_uid)
+	user_result, _ := model.UserSchema.GetUserByUid(configs.DB, user_uid_int)
+	userId_int := strconv.Itoa(user_result.Id)
+
+	objs_result, err := model.ObjSchema.GetObjsByUserId(configs.DB, userId_int)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
 	}

@@ -198,7 +198,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Obj"
+                            "$ref": "#/definitions/controller.Resp_Airdrop_Item"
                         }
                     }
                 }
@@ -434,17 +434,20 @@ const docTemplate = `{
                     "Main"
                 ],
                 "summary": "#JWT Token을 헤더에 포함하면 Obj를 조회함",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "array",
-                                "items": {
-                                    "$ref": "#/definitions/model.Obj"
-                                }
-                            }
+                            "$ref": "#/definitions/controller.Resp_GetObjsByUserId"
                         }
                     }
                 }
@@ -549,6 +552,14 @@ const docTemplate = `{
                 }
             }
         },
+        "controller.Resp_Airdrop_Item": {
+            "type": "object",
+            "properties": {
+                "payload": {
+                    "$ref": "#/definitions/model.Obj"
+                }
+            }
+        },
         "controller.Resp_FindUserAndCreateBlock": {
             "type": "object",
             "properties": {
@@ -572,7 +583,7 @@ const docTemplate = `{
                 "objs": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.Obj"
+                        "$ref": "#/definitions/model.Obj_with_productid"
                     }
                 }
             }
@@ -583,6 +594,17 @@ const docTemplate = `{
                 "payload": {
                     "type": "integer",
                     "example": 24
+                }
+            }
+        },
+        "controller.Resp_GetObjsByUserId": {
+            "type": "object",
+            "properties": {
+                "payload": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Obj"
+                    }
                 }
             }
         },
@@ -789,6 +811,57 @@ const docTemplate = `{
                 },
                 "user_nickname": {
                     "type": "string"
+                }
+            }
+        },
+        "model.Obj_with_productid": {
+            "type": "object",
+            "required": [
+                "block_id",
+                "pos",
+                "rot",
+                "user_id"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "integer"
+                },
+                "block_id": {
+                    "type": "integer"
+                },
+                "building_id": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "description": "PK",
+                    "type": "integer"
+                },
+                "msg_role": {
+                    "type": "integer"
+                },
+                "nft_id": {
+                    "type": "integer"
+                },
+                "pos": {
+                    "type": "string"
+                },
+                "product_id": {
+                    "type": "integer"
+                },
+                "rot": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "updated_user": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "integer"
                 }
             }
         },

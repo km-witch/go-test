@@ -16,7 +16,7 @@ type ReqBody_Token struct {
 
 type Resp_FindUserBlockData struct {
 	Block model.Block
-	Objs  []model.Obj
+	Objs  []model.Obj_with_productid
 }
 
 // UserBlockAccess          		godoc
@@ -98,7 +98,7 @@ func UserBlockAccess(ctx *gin.Context) {
 	}
 	fmt.Println("6")
 	// block의 obj 정보 return
-	objs, _ := model.ObjSchema.GetObjsByUserId(configs.DB, user_id_string)
+	objs, _ := model.ObjSchema.GetObjsByUserIdWithProductId(configs.DB, user_id_string)
 
 	// block access log 생성(최신화) 후 값 저장 -> access id
 	fmt.Println("7")

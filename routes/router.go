@@ -18,8 +18,8 @@ func SetupRouter(r *gin.Engine) {
 
 	// Swagger 라우팅
 	r.GET("/docs/:any", ginSwg.WrapHandler(swgFiles.Handler))
-	docs.SwaggerInfo.Host = "dev-go.witchworld.io"
-	// docs.SwaggerInfo.Host = "localhost:8080"
+	// docs.SwaggerInfo.Host = "dev-go.witchworld.io"
+	docs.SwaggerInfo.Host = "localhost:8080"
 
 	route_block := r.Group("/api/block", AuthCheck())
 	{
@@ -28,8 +28,8 @@ func SetupRouter(r *gin.Engine) {
 	}
 	route_obj := r.Group("/api/obj")
 	{
-		route_obj.POST("/airdrop", AuthCheck(), controller.Airdrop_Item)        // 로그인 필수 (헤더에 토큰 넣어서 보내야함)
-		route_obj.GET("/user/:userid", AuthCheck(), controller.GetObjsByUserId) // 로그인 필수. (헤더에 토큰 넣어서 보내야함)
+		route_obj.POST("/airdrop", AuthCheck(), controller.Airdrop_Item)  // 로그인 필수 (헤더에 토큰 넣어서 보내야함)
+		route_obj.GET("/userid", AuthCheck(), controller.GetObjsByUserId) // 로그인 필수. (헤더에 토큰 넣어서 보내야함)
 		route_obj.GET("/block/:blockid", controller.GetObjsByBlockId)
 		route_obj.GET("/msg/paging/:page/:limit", controller.ReadObjMessages)
 		route_obj.GET("/msg/:id", controller.GetObjMsg)
@@ -56,7 +56,7 @@ func SetupRouter(r *gin.Engine) {
 	// }
 	// route_item := r.Group("/api/obj")
 	// {
-	// 	route_item.GET("/userid", AuthCheck(), controller.GetObjsByUserId) // 로그인 필수. (헤더에 토큰 넣어서 보내야함)
+	// route_item.GET("/userid", AuthCheck(), controller.GetObjsByUserId) // 로그인 필수. (헤더에 토큰 넣어서 보내야함)
 	// 	route_item.GET("/blockid/:blockid", controller.GetObjsByBlockId)
 	// }
 	configs.DB.AutoMigrate(&model.Obj_msg{}, &model.Sale{}, &model.Saleslog{}, &model.Obj{}, &model.Block{}, &model.NftTx{}, &model.Wallet{}, &model.User{}, &model.AccessLog{}, &model.Profile{})
