@@ -165,6 +165,7 @@ func WriteObjMessage(ctx *gin.Context) {
 		return
 	}
 
+	log.Println("4")
 	// 작성을 owner만 가능한 경우
 	if obj.MsgRole == 3 {
 		if obj.User_id != uid {
