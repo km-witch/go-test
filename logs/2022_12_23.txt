@@ -1,3 +1,0 @@
-[LOG] 2022/12/23 16:29:43 main.go:31: Log Initialized
-[LOG] 2022/12/23 16:29:44 db.go:57: ✅ DB Connected
-[LOG] 2022/12/23 16:29:44 db2.go:45: ✅ DB2 Connected
